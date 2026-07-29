@@ -91,13 +91,10 @@ while IFS=$'\t' read -r skill_name skill_kind repository skill_path revision _ca
   [ -n "${skill_name}" ] || continue
 
   if [ "${skill_kind}" = "external" ]; then
-    (
-      cd "${stage_root}/project"
-      gh skill install "${repository}" "${skill_path}" \
-        --agent codex \
-        --scope project \
-        --pin "${revision}"
-    ) || fail "could not install ${skill_name} from ${repository}/${skill_path}@${revision}"
+    gh skill install "${repository}" "${skill_path}" \
+      --dir "${stage_skills}" \
+      --pin "${revision}" ||
+      fail "could not install ${skill_name} from ${repository}/${skill_path}@${revision}"
   else
     mkdir -p "${stage_skills}"
     cp -R "${catalog_root}/${skill_path}" "${stage_skills}/${skill_name}"

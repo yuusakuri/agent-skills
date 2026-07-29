@@ -10,6 +10,7 @@ CATALOG_ROOT="${TEST_ROOT}/catalog"
 TARGET_ROOT="${TEST_ROOT}/project/.agents/skills"
 FAKE_BIN="${TEST_ROOT}/bin"
 mkdir -p "${CATALOG_ROOT}/skills/local-skill" "${TARGET_ROOT}" "${FAKE_BIN}"
+mkdir -p "${TEST_ROOT}/project/.git"
 
 printf '%s\n' \
   '---' \
@@ -32,8 +33,18 @@ printf '%s\n' '#!/usr/bin/env bash' \
   'if [ "${FAIL_FETCH:-0}" = "1" ]; then exit 42; fi' \
   'skill_path="${4}"' \
   'skill_name="${skill_path##*/}"' \
-  'mkdir -p ".agents/skills/${skill_name}"' \
-  'printf "%s\n" "---" "name: ${skill_name}" "description: External test fixture skill." "---" "# External fixture" >".agents/skills/${skill_name}/SKILL.md"' \
+  'shift 4' \
+  'install_directory=""' \
+  'while [ "$#" -gt 0 ]; do' \
+  '  case "$1" in' \
+  '    --dir) install_directory="$2"; shift 2 ;;' \
+  '    --pin) shift 2 ;;' \
+  '    *) exit 65 ;;' \
+  '  esac' \
+  'done' \
+  '[ -n "${install_directory}" ] || exit 66' \
+  'mkdir -p "${install_directory}/${skill_name}"' \
+  'printf "%s\n" "---" "name: ${skill_name}" "description: External test fixture skill." "---" "# External fixture" >"${install_directory}/${skill_name}/SKILL.md"' \
   >"${FAKE_BIN}/gh"
 chmod +x "${FAKE_BIN}/gh"
 
