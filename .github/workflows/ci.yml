@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate catalog
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out catalog
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Check shell syntax
+        run: bash -n scripts/*.sh tests/*.sh
+
+      - name: Run validator tests
+        run: ./tests/validate_test.sh
+
+      - name: Run installer tests
+        run: ./tests/install_test.sh
+
+      - name: Check catalog policy
+        run: ./tests/catalog_test.sh
+
+      - name: Install all pinned skills
+        run: ./scripts/install.sh --target "${RUNNER_TEMP}/agent-skills"
+
+      - name: Verify complete installation
+        run: |
+          installed_count="$(find "${RUNNER_TEMP}/agent-skills" -mindepth 2 -maxdepth 2 -name SKILL.md -type f | wc -l | tr -d ' ')"
+          test "${installed_count}" = "97"
+          test -f "${RUNNER_TEMP}/agent-skills/document-architecture/references/requirements-definition.md"
+          test -f "${RUNNER_TEMP}/agent-skills/document-architecture/references/technical-spec.md"
+          test -f "${RUNNER_TEMP}/agent-skills/document-architecture/references/basic-design.md"
+          test -f "${RUNNER_TEMP}/agent-skills/document-architecture/references/detailed-design.md"
+          test -f "${RUNNER_TEMP}/agent-skills/document-architecture/references/system-proposal.md"
+          test -f "${RUNNER_TEMP}/agent-skills/document-architecture/references/business-proposal.md"
