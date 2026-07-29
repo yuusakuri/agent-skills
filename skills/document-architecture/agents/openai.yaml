@@ -1,0 +1,4 @@
+interface:
+  display_name: "Document Architecture"
+  short_description: "仕様書・設計書・提案書を一貫した構成と品質基準で共同執筆"
+  default_prompt: "Use $document-architecture to structure and coauthor a decision-ready system document."
