@@ -17,12 +17,12 @@
 | `skills.lock.tsv` | Skill名、取得元、固定コミット、担当する能力、起動条件 |
 | `skills/document-architecture/` | 仕様書・設計書・提案書の構成と品質確認を担う独自Skill |
 | `scripts/validate.sh` | 重複、浮動バージョン、不正なパス、ローカルSkillを検証 |
-| `scripts/install.sh` | 固定バージョンを一時領域へ取得し、成功時だけ対象を置換 |
+| `scripts/install.sh` | 取得元ごとに固定コミットを1回取得し、成功時だけ対象を置換 |
 | `tests/` | バリデータとインストーラの回帰テスト |
 
 ## インストール
 
-GitHub CLIのSkill機能が必要です。
+Gitが必要です。外部SkillはSkill単位ではなく、同じリポジトリとコミットを共有する単位でまとめて取得します。
 
 ```bash
 ./scripts/install.sh --target /path/to/project/.agents/skills

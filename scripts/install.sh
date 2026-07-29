@@ -65,8 +65,9 @@ fi
 
 "${SCRIPT_DIRECTORY}/validate.sh" "${LOCK_FILE}" "${catalog_root}" >/dev/null
 
-command -v gh >/dev/null 2>&1 || fail "GitHub CLI (gh) is required"
-gh skill --help >/dev/null 2>&1 || fail "GitHub CLI skill support is required"
+command -v git >/dev/null 2>&1 || fail "Git is required"
+github_base_url="${AGENT_SKILLS_GITHUB_BASE_URL:-https://github.com}"
+github_base_url="${github_base_url%/}"
 
 stage_root="$(mktemp -d "${target_parent}/.agent-skills-stage.XXXXXX")"
 backup_root=""
@@ -86,20 +87,68 @@ trap cleanup EXIT
 
 mkdir -p "${stage_root}/project"
 
-while IFS=$'\t' read -r skill_name skill_kind repository skill_path revision _capability _activation; do
+external_sources="${stage_root}/external-sources.tsv"
+awk -F '\t' 'NR > 1 && $2 == "external" { print $3 "\t" $5 }' "${LOCK_FILE}" |
+  LC_ALL=C sort -u >"${external_sources}"
+
+source_index=0
+while IFS=$'\t' read -r repository revision; do
+  [ -n "${repository}" ] || continue
+  source_index=$((source_index + 1))
+  source_checkout="${stage_root}/sources/${source_index}"
+  source_paths=()
+
+  while IFS=$'\t' read -r _skill_name skill_kind lock_repository skill_path lock_revision _capability _activation; do
+    [ "${skill_kind}" = "external" ] || continue
+    [ "${lock_repository}" = "${repository}" ] || continue
+    [ "${lock_revision}" = "${revision}" ] || continue
+    source_paths+=("${skill_path}")
+  done <"${LOCK_FILE}"
+
+  git init -q "${source_checkout}"
+  git -C "${source_checkout}" remote add origin "${github_base_url}/${repository}.git"
+  git -C "${source_checkout}" sparse-checkout init --cone
+  git -C "${source_checkout}" sparse-checkout set "${source_paths[@]}"
+  git -C "${source_checkout}" fetch -q --depth 1 origin "${revision}" ||
+    fail "could not fetch ${repository}@${revision}"
+  git -C "${source_checkout}" checkout -q --detach FETCH_HEAD
+
+  fetched_revision="$(git -C "${source_checkout}" rev-parse HEAD)"
+  [ "${fetched_revision}" = "${revision}" ] ||
+    fail "fetched revision mismatch for ${repository}: expected ${revision}, got ${fetched_revision}"
+
+  while IFS=$'\t' read -r skill_name skill_kind lock_repository skill_path lock_revision _capability _activation; do
+    [ "${skill_kind}" = "external" ] || continue
+    [ "${lock_repository}" = "${repository}" ] || continue
+    [ "${lock_revision}" = "${revision}" ] || continue
+
+    source_skill="${source_checkout}/${skill_path}"
+    [ -d "${source_skill}" ] ||
+      fail "source skill directory is missing: ${repository}/${skill_path}@${revision}"
+    resolved_source_skill="$(cd "${source_skill}" && pwd -P)"
+    case "${resolved_source_skill}" in
+      "${source_checkout}"/*) ;;
+      *) fail "source skill escapes checkout: ${repository}/${skill_path}" ;;
+    esac
+
+    mkdir -p "${stage_skills}"
+    cp -R "${source_skill}" "${stage_skills}/${skill_name}"
+  done <"${LOCK_FILE}"
+done <"${external_sources}"
+
+while IFS=$'\t' read -r skill_name skill_kind _repository skill_path _revision _capability _activation; do
   [ "${skill_name}" = "name" ] && continue
   [ -n "${skill_name}" ] || continue
 
-  if [ "${skill_kind}" = "external" ]; then
-    gh skill install "${repository}" "${skill_path}" \
-      --dir "${stage_skills}" \
-      --pin "${revision}" ||
-      fail "could not install ${skill_name} from ${repository}/${skill_path}@${revision}"
-  else
+  if [ "${skill_kind}" = "local" ]; then
     mkdir -p "${stage_skills}"
     cp -R "${catalog_root}/${skill_path}" "${stage_skills}/${skill_name}"
   fi
+done <"${LOCK_FILE}"
 
+while IFS=$'\t' read -r skill_name _skill_kind _repository _skill_path _revision _capability _activation; do
+  [ "${skill_name}" = "name" ] && continue
+  [ -n "${skill_name}" ] || continue
   installed_skill="${stage_skills}/${skill_name}/SKILL.md"
   [ -f "${installed_skill}" ] || fail "installed skill is missing SKILL.md: ${skill_name}"
   installed_name="$(sed -n 's/^name:[[:space:]]*//p' "${installed_skill}" | head -1 | tr -d '"')"
