@@ -16,13 +16,53 @@ test -L "${CATALOG_ROOT}/.agents/skills" ||
 test "$(readlink "${CATALOG_ROOT}/.agents/skills")" = "../skills" ||
   fail "catalog .agents/skills must point to ../skills"
 
+test -d "${CATALOG_ROOT}/.claude/skills" ||
+  fail "catalog must expose a real .claude/skills directory"
+test ! -L "${CATALOG_ROOT}/.claude/skills" ||
+  fail "Claude Code entrypoint must use individual skill symlinks"
+test ! -e "${CATALOG_ROOT}/SKILL.md" ||
+  fail "catalog must not add a competing root SKILL.md"
+
+skill_count="$("${PYTHON_BIN:-python3}" - "${CATALOG_ROOT}/catalog.toml" <<'PY'
+import sys
+import tomllib
+
+with open(sys.argv[1], "rb") as catalog_file:
+    catalog = tomllib.load(catalog_file)
+print(sum(len(source["skills"]) for source in catalog["sources"]))
+PY
+)"
+
+for skill_path in "${CATALOG_ROOT}"/skills/*; do
+  skill_name="$(basename "${skill_path}")"
+  claude_link="${CATALOG_ROOT}/.claude/skills/${skill_name}"
+  test -L "${claude_link}" ||
+    fail "Claude Code link is missing for ${skill_name}"
+  test "$(readlink "${claude_link}")" = "../../skills/${skill_name}" ||
+    fail "Claude Code link has the wrong target for ${skill_name}"
+  test -f "${claude_link}/SKILL.md" ||
+    fail "Claude Code cannot resolve ${skill_name}/SKILL.md"
+done
+
 mkdir -p "${TEST_ROOT}/.agents"
 ln -s "${CATALOG_ROOT}" "${TEST_ROOT}/.agents/catalog"
-ln -s "catalog/skills" "${TEST_ROOT}/.agents/skills"
+"${PYTHON_BIN:-python3}" "${CATALOG_ROOT}/scripts/sync_agent_links.py" \
+  --project-root "${TEST_ROOT}" \
+  --catalog-root "${TEST_ROOT}/.agents/catalog" \
+  --write
 
 available_count="$(find -L "${TEST_ROOT}/.agents/skills" -mindepth 2 -maxdepth 2 -name SKILL.md -type f | wc -l | tr -d ' ')"
-test "${available_count}" = "97" ||
-  fail "consumer must see 97 skills without installation, got ${available_count}"
+test "${available_count}" = "${skill_count}" ||
+  fail "Codex consumer sees ${available_count} of ${skill_count} skills"
+
+claude_count="$(find -L "${TEST_ROOT}/.claude/skills" -mindepth 2 -maxdepth 2 -name SKILL.md -type f | wc -l | tr -d ' ')"
+test "${claude_count}" = "${skill_count}" ||
+  fail "Claude Code consumer sees ${claude_count} of ${skill_count} skills"
+
+"${PYTHON_BIN:-python3}" "${CATALOG_ROOT}/scripts/sync_agent_links.py" \
+  --project-root "${TEST_ROOT}" \
+  --catalog-root "${TEST_ROOT}/.agents/catalog" \
+  --check
 
 for removed_path in \
   .gitmodules \
@@ -68,4 +108,21 @@ if grep -Fq 'skills/document-architecture/' "${CATALOG_ROOT}/README.md"; then
   fail "README must present document-architecture as a peer skill"
 fi
 
-printf 'ok - standalone catalog clone is runtime-ready and project-neutral\n'
+for heading in \
+  '## 対応エージェント' \
+  '## リポジトリ構成' \
+  '## 単体で利用' \
+  '## プロジェクトへ追加' \
+  '## カタログの更新' \
+  '## ライセンス'
+do
+  grep -Fq "${heading}" "${CATALOG_ROOT}/README.md" ||
+    fail "README is missing final user-facing section: ${heading}"
+done
+
+if grep -nE '([0-9]+件|採用一覧|選定|検討過程|GitHub Issues|作業管理)' \
+  "${CATALOG_ROOT}/README.md"; then
+  fail "README must not expose catalog counts or internal deliberation"
+fi
+
+printf 'ok - standalone catalog supports Codex and Claude Code\n'

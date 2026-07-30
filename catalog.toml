@@ -20,25 +20,32 @@ revision = "2fbfa004a0192529bc997d103fc12f19a3804aab"
 license = "MIT"
 license_file = "LICENSE"
 activation = "auto"
+aliases = [
+  { from = "idea-refine", to = "brainstorming" },
+  { from = "doubt-driven-development", to = "code-review-and-quality" },
+]
 skills = [
   { name = "api-and-interface-design", path = "skills/api-and-interface-design", capability = "api-and-interface-design" },
   { name = "browser-testing-with-devtools", path = "skills/browser-testing-with-devtools", capability = "browser-testing-with-devtools" },
   { name = "ci-cd-and-automation", path = "skills/ci-cd-and-automation", capability = "ci-cd-and-automation" },
-  { name = "code-review-and-quality", path = "skills/code-review-and-quality", capability = "code-review-and-quality" },
+  { name = "code-review-and-quality", path = "skills/code-review-and-quality", capability = "code-review-and-quality", resources = ["references/security-checklist.md", "references/performance-checklist.md"] },
+  { name = "code-simplification", path = "skills/code-simplification", capability = "code-simplification" },
   { name = "context-engineering", path = "skills/context-engineering", capability = "context-engineering" },
   { name = "debugging-and-error-recovery", path = "skills/debugging-and-error-recovery", capability = "debugging-and-error-recovery" },
+  { name = "deprecation-and-migration", path = "skills/deprecation-and-migration", capability = "deprecation-and-migration" },
   { name = "documentation-and-adrs", path = "skills/documentation-and-adrs", capability = "documentation-and-adrs" },
-  { name = "frontend-ui-engineering", path = "skills/frontend-ui-engineering", capability = "frontend-ui-engineering" },
-  { name = "incremental-implementation", path = "skills/incremental-implementation", capability = "incremental-implementation" },
+  { name = "frontend-ui-engineering", path = "skills/frontend-ui-engineering", capability = "frontend-ui-engineering", resources = ["references/accessibility-checklist.md"] },
+  { name = "git-workflow-and-versioning", path = "skills/git-workflow-and-versioning", capability = "git-workflow-and-versioning" },
+  { name = "incremental-implementation", path = "skills/incremental-implementation", capability = "incremental-implementation", resources = ["references/definition-of-done.md"] },
   { name = "interview-me", path = "skills/interview-me", capability = "interview-me" },
-  { name = "performance-optimization", path = "skills/performance-optimization", capability = "performance-optimization" },
-  { name = "planning-and-task-breakdown", path = "skills/planning-and-task-breakdown", capability = "planning-and-task-breakdown" },
-  { name = "security-and-hardening", path = "skills/security-and-hardening", capability = "security-and-hardening" },
-  { name = "shipping-and-launch", path = "skills/shipping-and-launch", capability = "shipping-and-launch" },
+  { name = "observability-and-instrumentation", path = "skills/observability-and-instrumentation", capability = "observability-and-instrumentation", resources = ["references/observability-checklist.md"] },
+  { name = "performance-optimization", path = "skills/performance-optimization", capability = "performance-optimization", resources = ["references/performance-checklist.md"] },
+  { name = "planning-and-task-breakdown", path = "skills/planning-and-task-breakdown", capability = "planning-and-task-breakdown", resources = ["references/definition-of-done.md"] },
+  { name = "security-and-hardening", path = "skills/security-and-hardening", capability = "security-and-hardening", resources = ["references/security-checklist.md"] },
+  { name = "shipping-and-launch", path = "skills/shipping-and-launch", capability = "shipping-and-launch", resources = ["references/definition-of-done.md", "references/security-checklist.md", "references/performance-checklist.md", "references/accessibility-checklist.md"] },
   { name = "source-driven-development", path = "skills/source-driven-development", capability = "source-driven-development" },
   { name = "spec-driven-development", path = "skills/spec-driven-development", capability = "spec-driven-development" },
-  { name = "test-driven-development", path = "skills/test-driven-development", capability = "test-driven-development" },
-  { name = "using-agent-skills", path = "skills/using-agent-skills", capability = "using-agent-skills" },
+  { name = "test-driven-development", path = "skills/test-driven-development", capability = "test-driven-development", resources = ["references/testing-patterns.md"] },
 ]
 
 [[sources]]
@@ -125,7 +132,6 @@ skills = [
   { name = "sprint-plan", path = "pm-execution/skills/sprint-plan", capability = "sprint-plan" },
   { name = "sql-queries", path = "pm-data-analytics/skills/sql-queries", capability = "sql-queries" },
   { name = "stakeholder-map", path = "pm-execution/skills/stakeholder-map", capability = "stakeholder-map" },
-  { name = "startup-canvas", path = "pm-product-strategy/skills/startup-canvas", capability = "startup-canvas", activation = "explicit-startup-canvas" },
   { name = "strategy-red-team", path = "pm-execution/skills/strategy-red-team", capability = "strategy-red-team" },
   { name = "summarize-interview", path = "pm-product-discovery/skills/summarize-interview", capability = "single-interview-summary" },
   { name = "summarize-meeting", path = "pm-execution/skills/summarize-meeting", capability = "summarize-meeting" },
@@ -147,6 +153,24 @@ revision = "9432e2771eb7c221c9454a210c6ae55b6ee25d54"
 license = "Apache-2.0"
 license_file = "LICENSE"
 activation = "auto"
+aliases = [
+  { from = "define-prioritization-framework", to = "prioritization-frameworks" },
+  { from = "foundation-persona", to = "user-personas" },
+  { from = "utility-pm-critic", to = "strategy-red-team" },
+  { from = "foundation-okr-writer", to = "brainstorm-okrs" },
+  { from = "foundation-lean-canvas", to = "lean-canvas" },
+  { from = "tool-foundation-sprint-differentiation", to = "positioning-ideas" },
+  { from = "discover-journey-map", to = "customer-journey-map" },
+  { from = "foundation-meeting-recap", to = "summarize-meeting" },
+  { from = "foundation-meeting-synthesize", to = "summarize-meeting" },
+  { from = "measure-survey-analysis", to = "sentiment-analysis" },
+  { from = "deliver-user-stories", to = "user-stories" },
+  { from = "develop-adr", to = "documentation-and-adrs" },
+  { from = "deliver-launch-checklist", to = "shipping-and-launch" },
+  { from = "iterate-lessons-log", to = "retro" },
+  { from = "measure-experiment-results", to = "ab-test-analysis" },
+  { from = "measure-instrumentation-spec", to = "observability-and-instrumentation" },
+]
 skills = [
   { name = "define-hypothesis", path = "skills/define-hypothesis", capability = "define-hypothesis" },
   { name = "define-jtbd-canvas", path = "skills/define-jtbd-canvas", capability = "define-jtbd-canvas" },
@@ -170,4 +194,5 @@ license = "MIT"
 activation = "auto"
 skills = [
   { name = "document-architecture", path = "skills/document-architecture", capability = "document-architecture" },
+  { name = "using-agent-skills", path = "skills/using-agent-skills", capability = "using-agent-skills", activation = "explicit-catalog-guidance" },
 ]

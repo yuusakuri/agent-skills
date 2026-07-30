@@ -20,6 +20,7 @@ mkdir -p \
   "${TARGET_ROOT}" \
   "${SOURCE_WORK}/skills/external-one" \
   "${SOURCE_WORK}/skills/external-two" \
+  "${SOURCE_WORK}/references" \
   "${REMOTE_ROOT}/example" \
   "${FAKE_BIN}" \
   "${TEST_ROOT}/project/.git"
@@ -37,10 +38,17 @@ for skill_name in external-one external-two; do
     '---' \
     "name: ${skill_name}" \
     'description: External test fixture skill.' \
+    'metadata:' \
+    '  frameworks: [test, fixture]' \
+    '  updated: 2026-01-01' \
     '---' \
     "# ${skill_name}" \
     >"${SOURCE_WORK}/skills/${skill_name}/SKILL.md"
 done
+printf '\nUse `retired-skill` for the next step.\n' \
+  >>"${SOURCE_WORK}/skills/external-one/SKILL.md"
+printf 'shared completion criteria\n' \
+  >"${SOURCE_WORK}/references/definition-of-done.md"
 printf '%s\n' \
   'MIT License' \
   '' \
@@ -50,7 +58,7 @@ printf '%s\n' \
 git -C "${SOURCE_WORK}" init -q
 git -C "${SOURCE_WORK}" config user.name "Agent Skills Test"
 git -C "${SOURCE_WORK}" config user.email "agent-skills-test@example.invalid"
-git -C "${SOURCE_WORK}" add skills LICENSE
+git -C "${SOURCE_WORK}" add skills references LICENSE
 git -C "${SOURCE_WORK}" commit -q -m "Add fixture skills"
 SOURCE_REVISION="$(git -C "${SOURCE_WORK}" rev-parse HEAD)"
 git clone -q --bare "${SOURCE_WORK}" "${REMOTE_ROOT}/example/source.git"
@@ -68,8 +76,11 @@ revision = "${revision}"
 license = "MIT"
 license_file = "LICENSE"
 activation = "auto"
+aliases = [
+  { from = "retired-skill", to = "local-skill" },
+]
 skills = [
-  { name = "external-one", path = "skills/external-one", capability = "external-one-capability" },
+  { name = "external-one", path = "skills/external-one", capability = "external-one-capability", resources = ["references/definition-of-done.md"] },
   { name = "external-two", path = "skills/external-two", capability = "external-two-capability" },
 ]
 
@@ -124,9 +135,22 @@ PATH="${FAKE_BIN}:${PATH}" \
 
 test ! -e "${TARGET_ROOT}/sentinel"
 test -f "${TARGET_ROOT}/external-one/SKILL.md"
+test -f "${TARGET_ROOT}/external-one/references/definition-of-done.md"
+grep -Fq 'shared completion criteria' \
+  "${TARGET_ROOT}/external-one/references/definition-of-done.md"
+grep -Fq 'Use `local-skill` for the next step.' \
+  "${TARGET_ROOT}/external-one/SKILL.md"
+if grep -Fq 'retired-skill' "${TARGET_ROOT}/external-one/SKILL.md"; then
+  printf 'not ok - excluded upstream skill reference was not normalized\n' >&2
+  exit 1
+fi
 test -f "${TARGET_ROOT}/external-two/SKILL.md"
 test -f "${TARGET_ROOT}/local-skill/SKILL.md"
-printf 'ok - installs external and local skills\n'
+grep -Fq 'frameworks: "test, fixture"' \
+  "${TARGET_ROOT}/external-two/SKILL.md"
+grep -Fq 'updated: "2026-01-01"' \
+  "${TARGET_ROOT}/external-two/SKILL.md"
+printf 'ok - installs self-contained external and local skills\n'
 test "$(grep -Fc 'https://github.com/example/source' "${CATALOG_ROOT}/THIRD_PARTY_NOTICES.md")" = "1"
 grep -Fq "${SOURCE_REVISION}" "${CATALOG_ROOT}/THIRD_PARTY_NOTICES.md"
 grep -Fq 'Copyright (c) Test Fixture' "${CATALOG_ROOT}/THIRD_PARTY_NOTICES.md"

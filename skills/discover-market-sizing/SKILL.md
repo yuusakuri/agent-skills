@@ -3,12 +3,12 @@ name: discover-market-sizing
 description: Estimate market opportunity (TAM, SAM, SOM) using multiple sizing frameworks (top-down, bottom-up, comparable company, analogous market). Triangulates across frameworks, highlights where they converge and diverge as signal, and produces a calibrated range with source-graded confidence labels. Refuses unbounded fabrications; always offers a labeled lower-confidence path when data is thin. Used for investment cases, go/no-go decisions, and stakeholder pitches.
 license: Apache-2.0
 metadata:
-  phase: discover
+  phase: "discover"
   version: "1.1.0"
-  updated: 2026-07-04
-  category: strategy
-  frameworks: [triple-diamond, business-strategy]
-  author: product-on-purpose
+  updated: "2026-07-04"
+  category: "strategy"
+  frameworks: "triple-diamond, business-strategy"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Market Sizing
@@ -31,9 +31,9 @@ You produce a multi-framework market-sizing meta-analysis covering TAM (Total Ad
 ## When NOT to Use
 
 - You are sizing an internal-tool investment case (time saved x headcount x cost), not an external market -> compute the ROI directly; this skill covers external market opportunity only
-- You need to rank or prioritize a list of features or initiatives, not size a market -> use `define-prioritization-framework`
+- You need to rank or prioritize a list of features or initiatives, not size a market -> use `prioritization-frameworks`
 - You need competitive positioning or a feature comparison, not TAM/SAM/SOM -> use `discover-competitive-analysis`
-- You have not yet identified who the target customer is -> use `foundation-persona` first
+- You have not yet identified who the target customer is -> use `user-personas` first
 
 ## Inputs
 
@@ -204,7 +204,7 @@ Quick-estimate mode still refuses unbounded fabrication. The difference is it ac
 
 - Output of this skill feeds into: `develop-solution-brief` and `deliver-prd` (sizing informs scope and the investment case)
 - Inputs to this skill often come from: `discover-competitive-analysis` (market and competitor context) and `discover-interview-synthesis` (qualitative signal that informs sizing assumptions)
-- Adversarial review via: `utility-pm-critic` (use proactively to challenge assumptions, source quality, and confidence labels)
+- Adversarial review via: `strategy-red-team` (use proactively to challenge assumptions, source quality, and confidence labels)
 
 ## Output Format
 

@@ -3,12 +3,12 @@ name: define-jtbd-canvas
 description: Creates a Jobs to be Done canvas capturing the functional, emotional, and social dimensions of a customer job. Use when deeply understanding customer motivations, designing for jobs, or reframing product positioning.
 license: Apache-2.0
 metadata:
-  phase: define
+  phase: "define"
   version: "2.1.0"
-  updated: 2026-06-10
-  category: problem-framing
-  frameworks: [triple-diamond, lean-startup, design-thinking]
-  author: product-on-purpose
+  updated: "2026-06-10"
+  category: "problem-framing"
+  frameworks: "triple-diamond, lean-startup, design-thinking"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Jobs to be Done Canvas
@@ -26,7 +26,7 @@ A Jobs to be Done (JTBD) canvas captures the complete picture of why customers "
 
 ## When NOT to Use
 
-- You need a person-shaped artifact (goals, behaviors, quotes) for design or marketing work -> use `foundation-persona`; the canvas captures the job, the persona captures the person
+- You need a person-shaped artifact (goals, behaviors, quotes) for design or marketing work -> use `user-personas`; the canvas captures the job, the persona captures the person
 - You have no customer research yet -> synthesize interviews first with `discover-interview-synthesis`; the canvas's insights must trace to research, not assumptions
 - You are framing one specific problem to solve now -> use `define-problem-statement`
 - You need to map opportunities to a measurable outcome for prioritization -> use `define-opportunity-tree`

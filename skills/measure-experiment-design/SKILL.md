@@ -3,12 +3,12 @@ name: measure-experiment-design
 description: Designs an A/B test or experiment with variants, success metrics, sample size, and duration for an existing hypothesis. Use when planning an experiment to validate a product change or test an assumption you have already framed. To articulate the hypothesis itself first, use define-hypothesis.
 license: Apache-2.0
 metadata:
-  phase: measure
+  phase: "measure"
   version: "2.1.0"
-  updated: 2026-06-10
-  category: validation
-  frameworks: [triple-diamond, lean-startup, design-thinking]
-  author: product-on-purpose
+  updated: "2026-06-10"
+  category: "validation"
+  frameworks: "triple-diamond, lean-startup, design-thinking"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Experiment Design
@@ -26,9 +26,9 @@ An experiment design document defines all parameters needed to run a rigorous A/
 ## When NOT to Use
 
 - The hypothesis itself is not yet articulated -> use `define-hypothesis` first; this skill designs the test for a claim you already have
-- You are analyzing a completed experiment -> use `measure-experiment-results`
-- You need the event tracking that will measure the experiment -> use `measure-instrumentation-spec`
-- You are gathering opinions rather than running a controlled test -> use `measure-survey-analysis`
+- You are analyzing a completed experiment -> use `ab-test-analysis`
+- You need the event tracking that will measure the experiment -> use `observability-and-instrumentation`
+- You are gathering opinions rather than running a controlled test -> use `sentiment-analysis`
 
 ## Instructions
 

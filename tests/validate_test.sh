@@ -28,7 +28,8 @@ assert_success() {
   local fixture_root="$2"
   if "${PYTHON_BIN}" "${VALIDATOR}" \
     --catalog "${fixture_root}/catalog.toml" \
-    --catalog-root "${fixture_root}" >/dev/null; then
+    --catalog-root "${fixture_root}" \
+    --schema-only >/dev/null; then
     PASS_COUNT=$((PASS_COUNT + 1))
     printf 'ok - %s\n' "${test_name}"
   else
@@ -44,7 +45,8 @@ assert_failure() {
   local output
   if output=$("${PYTHON_BIN}" "${VALIDATOR}" \
     --catalog "${fixture_root}/catalog.toml" \
-    --catalog-root "${fixture_root}" 2>&1); then
+    --catalog-root "${fixture_root}" \
+    --schema-only 2>&1); then
     printf 'not ok - %s: expected failure\n' "${test_name}" >&2
     exit 1
   fi
@@ -56,8 +58,28 @@ assert_failure() {
   printf 'ok - %s\n' "${test_name}"
 }
 
+assert_snapshot_failure() {
+  local test_name="$1"
+  local expected_message="$2"
+  local fixture_root="$3"
+  local output
+  if output=$("${PYTHON_BIN}" "${VALIDATOR}" \
+    --catalog "${fixture_root}/catalog.toml" \
+    --catalog-root "${fixture_root}" 2>&1); then
+    printf 'not ok - %s: expected failure\n' "${test_name}" >&2
+    exit 1
+  fi
+  if [[ "${output}" != *"${expected_message}"* ]]; then
+    printf 'not ok - %s: missing error %s\n%s\n' \
+      "${test_name}" "${expected_message}" "${output}" >&2
+    exit 1
+  fi
+  PASS_COUNT=$((PASS_COUNT + 1))
+  printf 'ok - %s\n' "${test_name}"
+}
+
 valid_fixture="$(new_fixture)"
-trap 'rm -rf "${valid_fixture}" "${duplicate_name_fixture:-}" "${duplicate_capability_fixture:-}" "${floating_revision_fixture:-}" "${missing_local_fixture:-}" "${traversal_fixture:-}" "${submodule_fixture:-}"' EXIT
+trap 'rm -rf "${valid_fixture}" "${duplicate_name_fixture:-}" "${duplicate_capability_fixture:-}" "${floating_revision_fixture:-}" "${missing_local_fixture:-}" "${traversal_fixture:-}" "${submodule_fixture:-}" "${invalid_resource_fixture:-}" "${invalid_alias_fixture:-}" "${broken_reference_fixture:-}" "${metadata_fixture:-}"' EXIT
 write_skill "${valid_fixture}" local-skill
 cat >"${valid_fixture}/catalog.toml" <<'TOML'
 version = 1
@@ -189,5 +211,85 @@ skills = [
 ]
 TOML
 assert_failure 'rejects nested submodules' 'source kind must be vendored or local' "${submodule_fixture}"
+
+invalid_resource_fixture="$(new_fixture)"
+cat >"${invalid_resource_fixture}/catalog.toml" <<'TOML'
+version = 1
+[[sources]]
+id = "example"
+kind = "vendored"
+repository = "example/source"
+revision = "0123456789abcdef0123456789abcdef01234567"
+license = "MIT"
+license_file = "LICENSE"
+activation = "auto"
+skills = [
+  { name = "external-skill", path = "skills/one", capability = "external-capability", resources = ["../shared.md"] },
+]
+TOML
+assert_failure 'rejects resource traversal' 'path must be repository-relative' "${invalid_resource_fixture}"
+
+invalid_alias_fixture="$(new_fixture)"
+cat >"${invalid_alias_fixture}/catalog.toml" <<'TOML'
+version = 1
+[[sources]]
+id = "example"
+kind = "vendored"
+repository = "example/source"
+revision = "0123456789abcdef0123456789abcdef01234567"
+license = "MIT"
+license_file = "LICENSE"
+activation = "auto"
+aliases = [
+  { from = "retired-skill", to = "missing-skill" },
+]
+skills = [
+  { name = "external-skill", path = "skills/one", capability = "external-capability" },
+]
+TOML
+assert_failure 'rejects aliases to missing skills' 'alias target is not a catalog skill' "${invalid_alias_fixture}"
+
+broken_reference_fixture="$(new_fixture)"
+write_skill "${broken_reference_fixture}" local-skill
+printf '\nRead `references/missing.md` before continuing.\n' \
+  >>"${broken_reference_fixture}/skills/local-skill/SKILL.md"
+cat >"${broken_reference_fixture}/catalog.toml" <<'TOML'
+version = 1
+[[sources]]
+id = "catalog"
+kind = "local"
+repository = "."
+license = "MIT"
+activation = "auto"
+skills = [
+  { name = "local-skill", path = "skills/local-skill", capability = "local-capability" },
+]
+TOML
+assert_snapshot_failure 'rejects broken Skill resources' 'broken local reference' "${broken_reference_fixture}"
+
+metadata_fixture="$(new_fixture)"
+mkdir -p "${metadata_fixture}/skills/local-skill"
+cat >"${metadata_fixture}/skills/local-skill/SKILL.md" <<'SKILL'
+---
+name: local-skill
+description: Test fixture with invalid metadata.
+metadata:
+  frameworks: [one, two]
+---
+# Local skill
+SKILL
+cat >"${metadata_fixture}/catalog.toml" <<'TOML'
+version = 1
+[[sources]]
+id = "catalog"
+kind = "local"
+repository = "."
+license = "MIT"
+activation = "auto"
+skills = [
+  { name = "local-skill", path = "skills/local-skill", capability = "local-capability" },
+]
+TOML
+assert_snapshot_failure 'rejects non-string metadata' 'metadata values must be strings' "${metadata_fixture}"
 
 printf '1..%s\n' "${PASS_COUNT}"
