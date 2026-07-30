@@ -54,9 +54,18 @@ assert_failure() {
 valid_fixture="$(new_fixture)"
 trap 'rm -rf "${valid_fixture}" "${duplicate_name_fixture:-}" "${duplicate_capability_fixture:-}" "${floating_revision_fixture:-}" "${missing_local_fixture:-}" "${traversal_fixture:-}"' EXIT
 write_skill "${valid_fixture}" local-skill
+mkdir -p "${valid_fixture}/vendor/example--source/skills/nested-skill"
+printf '%s\n' \
+  '---' \
+  'name: nested-skill' \
+  'description: Nested submodule fixture skill.' \
+  '---' \
+  '# Nested fixture' \
+  >"${valid_fixture}/vendor/example--source/skills/nested-skill/SKILL.md"
 printf '%s\n' \
   $'name\tkind\trepository\tpath\trevision\tcapability\tactivation' \
   $'external-skill\texternal\texample/source\tskills/external-skill\t0123456789abcdef0123456789abcdef01234567\texternal-capability\tauto' \
+  $'nested-skill\tsubmodule\texample/source\tskills/nested-skill\t0123456789abcdef0123456789abcdef01234567\tnested-capability\tauto' \
   $'local-skill\tlocal\t.\tskills/local-skill\t-\tlocal-capability\tauto' \
   >"${valid_fixture}/skills.lock.tsv"
 assert_success 'accepts a valid lock' "${valid_fixture}"

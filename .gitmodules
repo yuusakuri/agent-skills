@@ -1,0 +1,3 @@
+[submodule "vendor/ninehills--skills"]
+	path = vendor/ninehills--skills
+	url = https://github.com/ninehills/skills.git

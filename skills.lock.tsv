@@ -87,7 +87,7 @@ summarize-meeting	external	phuryn/pm-skills	pm-execution/skills/summarize-meetin
 swot-analysis	external	phuryn/pm-skills	pm-product-strategy/skills/swot-analysis	18468a95b427e70e258b51389796367c6f684e7d	swot-analysis	auto
 test-driven-development	external	addyosmani/agent-skills	skills/test-driven-development	2fbfa004a0192529bc997d103fc12f19a3804aab	test-driven-development	auto
 test-scenarios	external	phuryn/pm-skills	pm-execution/skills/test-scenarios	18468a95b427e70e258b51389796367c6f684e7d	test-scenarios	auto
-ui-ux-pro-max	external	ninehills/skills	ui-ux-pro-max	f3e82a7e2bfbed54fc2b4a715a1986f5f467e827	ui-ux-pro-max	auto
+ui-ux-pro-max	submodule	ninehills/skills	ui-ux-pro-max	f3e82a7e2bfbed54fc2b4a715a1986f5f467e827	ui-ux-pro-max	auto
 user-personas	external	phuryn/pm-skills	pm-market-research/skills/user-personas	18468a95b427e70e258b51389796367c6f684e7d	user-personas	auto
 user-segmentation	external	phuryn/pm-skills	pm-market-research/skills/user-segmentation	18468a95b427e70e258b51389796367c6f684e7d	user-segmentation	auto
 user-stories	external	phuryn/pm-skills	pm-execution/skills/user-stories	18468a95b427e70e258b51389796367c6f684e7d	backlog-user-stories	auto

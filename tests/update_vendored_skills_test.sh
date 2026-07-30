@@ -2,8 +2,8 @@
 set -euo pipefail
 
 REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-INSTALLER="${REPOSITORY_ROOT}/scripts/install.sh"
-TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/agent-skills-install.XXXXXX")"
+UPDATER="${REPOSITORY_ROOT}/scripts/update-vendored-skills.sh"
+TEST_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/agent-skills-update.XXXXXX")"
 trap 'rm -rf "${TEST_ROOT}"' EXIT
 
 CATALOG_ROOT="${TEST_ROOT}/catalog"
@@ -40,11 +40,16 @@ for skill_name in external-one external-two; do
     "# ${skill_name}" \
     >"${SOURCE_WORK}/skills/${skill_name}/SKILL.md"
 done
+printf '%s\n' \
+  'MIT License' \
+  '' \
+  'Copyright (c) Test Fixture' \
+  >"${SOURCE_WORK}/LICENSE"
 
 git -C "${SOURCE_WORK}" init -q
 git -C "${SOURCE_WORK}" config user.name "Agent Skills Test"
 git -C "${SOURCE_WORK}" config user.email "agent-skills-test@example.invalid"
-git -C "${SOURCE_WORK}" add skills
+git -C "${SOURCE_WORK}" add skills LICENSE
 git -C "${SOURCE_WORK}" commit -q -m "Add fixture skills"
 SOURCE_REVISION="$(git -C "${SOURCE_WORK}" rev-parse HEAD)"
 git clone -q --bare "${SOURCE_WORK}" "${REMOTE_ROOT}/example/source.git"
@@ -75,7 +80,7 @@ if PATH="${FAKE_BIN}:${PATH}" \
   FETCH_LOG="${FETCH_LOG}" \
   REAL_GIT_BIN="${REAL_GIT_BIN}" \
   AGENT_SKILLS_GITHUB_BASE_URL="file://${REMOTE_ROOT}" \
-  "${INSTALLER}" \
+  "${UPDATER}" \
     --lock "${CATALOG_ROOT}/skills.lock.tsv" \
     --catalog-root "${CATALOG_ROOT}" \
     --target "${TARGET_ROOT}" >/dev/null 2>&1; then
@@ -91,7 +96,7 @@ PATH="${FAKE_BIN}:${PATH}" \
   FETCH_LOG="${FETCH_LOG}" \
   REAL_GIT_BIN="${REAL_GIT_BIN}" \
   AGENT_SKILLS_GITHUB_BASE_URL="file://${REMOTE_ROOT}" \
-  "${INSTALLER}" \
+  "${UPDATER}" \
     --lock "${CATALOG_ROOT}/skills.lock.tsv" \
     --catalog-root "${CATALOG_ROOT}" \
     --target "${TARGET_ROOT}" >/dev/null
@@ -101,6 +106,9 @@ test -f "${TARGET_ROOT}/external-one/SKILL.md"
 test -f "${TARGET_ROOT}/external-two/SKILL.md"
 test -f "${TARGET_ROOT}/local-skill/SKILL.md"
 printf 'ok - installs external and local skills\n'
+test -f "${CATALOG_ROOT}/third-party-licenses/example--source/LICENSE"
+test -f "${CATALOG_ROOT}/third-party-licenses/example--source/SOURCE.md"
+printf 'ok - preserves source license and provenance\n'
 
 fetch_count="$(wc -l <"${FETCH_LOG}" | tr -d ' ')"
 test "${fetch_count}" = "1"
@@ -112,7 +120,7 @@ PATH="${FAKE_BIN}:${PATH}" \
   FETCH_LOG="${FETCH_LOG}" \
   REAL_GIT_BIN="${REAL_GIT_BIN}" \
   AGENT_SKILLS_GITHUB_BASE_URL="file://${REMOTE_ROOT}" \
-  "${INSTALLER}" \
+  "${UPDATER}" \
     --lock "${CATALOG_ROOT}/skills.lock.tsv" \
     --catalog-root "${CATALOG_ROOT}" \
     --target "${TARGET_ROOT}" >/dev/null
@@ -121,4 +129,15 @@ test "${first_digest}" = "${second_digest}"
 test "$(wc -l <"${FETCH_LOG}" | tr -d ' ')" = "1"
 printf 'ok - reinstall is idempotent\n'
 
-printf '1..4\n'
+PATH="${FAKE_BIN}:${PATH}" \
+  FETCH_LOG="${FETCH_LOG}" \
+  REAL_GIT_BIN="${REAL_GIT_BIN}" \
+  AGENT_SKILLS_GITHUB_BASE_URL="file://${REMOTE_ROOT}" \
+  "${UPDATER}" \
+    --check \
+    --lock "${CATALOG_ROOT}/skills.lock.tsv" \
+    --catalog-root "${CATALOG_ROOT}" \
+    --target "${TARGET_ROOT}" >/dev/null
+printf 'ok - check mode accepts a matching snapshot\n'
+
+printf '1..6\n'
