@@ -24,7 +24,7 @@ available_count="$(find -L "${TEST_ROOT}/.agents/skills" -mindepth 2 -maxdepth 2
 test "${available_count}" = "97" ||
   fail "consumer must see 97 skills without installation, got ${available_count}"
 
-if rg -ni 'open.?choice' \
+if grep -RniE 'open.?choice' \
   "${CATALOG_ROOT}/README.md" \
   "${CATALOG_ROOT}/skills" \
   "${CATALOG_ROOT}/scripts" \
@@ -33,9 +33,9 @@ if rg -ni 'open.?choice' \
 fi
 
 document_skill="${CATALOG_ROOT}/skills/document-architecture/SKILL.md"
-rg -Fq "GitHub-Flavored Markdown is the default output." "${document_skill}" ||
+grep -Fq "GitHub-Flavored Markdown is the default output." "${document_skill}" ||
   fail "document-architecture must default to GitHub-Flavored Markdown"
-rg -Fq "Only create a Word deliverable when explicitly requested" "${document_skill}" ||
+grep -Fq "Only create a Word deliverable when explicitly requested" "${document_skill}" ||
   fail "document-architecture must keep Word output opt-in"
 
 printf 'ok - recursive catalog checkout is runtime-ready and project-neutral\n'
