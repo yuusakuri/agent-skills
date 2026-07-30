@@ -22,9 +22,11 @@ SOURCE_KEYS = {
     "license_file",
     "notice_file",
     "activation",
+    "aliases",
     "skills",
 }
-SKILL_KEYS = {"name", "path", "capability", "activation"}
+SKILL_KEYS = {"name", "path", "capability", "activation", "resources"}
+ALIAS_KEYS = {"from", "to"}
 
 
 class CatalogError(ValueError):
@@ -37,6 +39,13 @@ class Skill:
     path: PurePosixPath
     capability: str
     activation: str
+    resources: tuple[PurePosixPath, ...]
+
+
+@dataclass(frozen=True)
+class Alias:
+    source: str
+    target: str
 
 
 @dataclass(frozen=True)
@@ -49,6 +58,7 @@ class Source:
     license_file: PurePosixPath | None
     notice_file: PurePosixPath | None
     activation: str
+    aliases: tuple[Alias, ...]
     skills: tuple[Skill, ...]
 
 
@@ -120,7 +130,43 @@ def _parse_skill(
         raise CatalogError(f"invalid skill name: {name}")
     if not NAME_PATTERN.fullmatch(capability):
         raise CatalogError(f"invalid capability: {capability}")
-    return Skill(name, path, capability, activation_value)
+    raw_resources = raw_skill.get("resources", [])
+    if not isinstance(raw_resources, list) or any(
+        not isinstance(resource, str) for resource in raw_resources
+    ):
+        raise CatalogError(f"{context} resources must be an array of paths")
+    resources = tuple(
+        _relative_path(resource, f"{context} resource")
+        for resource in raw_resources
+    )
+    if len(resources) != len(set(resources)):
+        raise CatalogError(f"{context} has duplicate resources")
+    if any(
+        resource.parts[0] not in {"assets", "references", "scripts"}
+        for resource in resources
+    ):
+        raise CatalogError(
+            f"{context} resources must be under assets, references, or scripts"
+        )
+    return Skill(name, path, capability, activation_value, resources)
+
+
+def _parse_alias(raw_alias: Any, source_id: str) -> Alias:
+    context = f"source {source_id} alias"
+    if not isinstance(raw_alias, dict):
+        raise CatalogError(f"{context} must be a table")
+    unexpected = set(raw_alias) - ALIAS_KEYS
+    if unexpected:
+        raise CatalogError(
+            f"{context} has unsupported keys: {', '.join(sorted(unexpected))}"
+        )
+    source = _required_string(raw_alias, "from", context)
+    target = _required_string(raw_alias, "to", context)
+    if not NAME_PATTERN.fullmatch(source) or not NAME_PATTERN.fullmatch(target):
+        raise CatalogError(f"{context} names must use kebab-case")
+    if source == target:
+        raise CatalogError(f"{context} must change the skill name")
+    return Alias(source, target)
 
 
 def _parse_source(raw_source: Any) -> Source:
@@ -149,6 +195,13 @@ def _parse_source(raw_source: Any) -> Source:
     activation = _required_string(
         raw_source, "activation", f"source {source_id}"
     )
+    raw_aliases = raw_source.get("aliases", [])
+    if not isinstance(raw_aliases, list):
+        raise CatalogError(f"source {source_id} aliases must be an array")
+    aliases = tuple(_parse_alias(alias, source_id) for alias in raw_aliases)
+    alias_sources = [alias.source for alias in aliases]
+    if len(alias_sources) != len(set(alias_sources)):
+        raise CatalogError(f"source {source_id} has duplicate aliases")
 
     revision_value = raw_source.get("revision")
     license_value = raw_source.get("license_file")
@@ -210,6 +263,7 @@ def _parse_source(raw_source: Any) -> Source:
         license_file,
         notice_file,
         activation,
+        aliases,
         skills,
     )
 
@@ -271,5 +325,17 @@ def load_catalog(
                         f"local SKILL.md name does not match {skill.name}: "
                         f"{declared_name or '<missing>'}"
                     )
+
+    for source in sources:
+        for alias in source.aliases:
+            if alias.target not in names:
+                raise CatalogError(
+                    f"alias target is not a catalog skill: "
+                    f"{alias.source} -> {alias.target}"
+                )
+            if alias.source in names:
+                raise CatalogError(
+                    f"alias source is already a catalog skill: {alias.source}"
+                )
 
     return Catalog(1, sources)

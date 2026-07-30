@@ -3,12 +3,12 @@ name: define-hypothesis
 description: Defines a testable hypothesis with clear success metrics and a validation approach. Use when forming assumptions to test or aligning a team on what success looks like, before any experiment is designed. To design the A/B test or experiment that will validate the hypothesis, use measure-experiment-design.
 license: Apache-2.0
 metadata:
-  phase: define
+  phase: "define"
   version: "2.1.0"
-  updated: 2026-06-10
-  category: ideation
-  frameworks: [triple-diamond, lean-startup, design-thinking]
-  author: product-on-purpose
+  updated: "2026-06-10"
+  category: "ideation"
+  frameworks: "triple-diamond, lean-startup, design-thinking"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Hypothesis
@@ -28,7 +28,7 @@ A hypothesis is a testable prediction about how a change will affect user behavi
 - You are ready to design the actual A/B test (variants, sample size, duration) -> use `measure-experiment-design`; this skill frames what to test, not how
 - The problem itself is still unframed -> use `define-problem-statement` first
 - You want to organize many assumptions and ideas into a discovery structure -> use `define-opportunity-tree`
-- The team needs the full business-model picture, not one testable claim -> use `foundation-lean-canvas`
+- The team needs the full business-model picture, not one testable claim -> use `lean-canvas`
 
 ## Instructions
 

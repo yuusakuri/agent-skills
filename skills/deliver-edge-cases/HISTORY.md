@@ -9,7 +9,7 @@
 
 ## 2.1.1 (2026-06-13)
 
-Trigger-recall patch (M-31 finding B1): the trigger-eval baseline confirmed under-triggering on intent-only phrasings (no literal "edge case" keyword) on both Haiku (50% validation) and Sonnet (63% validation). The description and the "When to Use" section now name the common synonyms explicitly - failure modes, what can go wrong, race conditions, timeouts, and boundary or limit scenarios - so the router recognizes the domain when expressed in user language. Boundary pointers to deliver-acceptance-criteria, deliver-prd, iterate-lessons-log, and deliver-launch-checklist are unchanged. No body, template, or example changes beyond the one added "When to Use" bullet.
+Trigger-recall patch (M-31 finding B1): the trigger-eval baseline confirmed under-triggering on intent-only phrasings (no literal "edge case" keyword) on both Haiku (50% validation) and Sonnet (63% validation). The description and the "When to Use" section now name the common synonyms explicitly - failure modes, what can go wrong, race conditions, timeouts, and boundary or limit scenarios - so the router recognizes the domain when expressed in user language. Boundary pointers to deliver-acceptance-criteria, deliver-prd, retro, and shipping-and-launch are unchanged. No body, template, or example changes beyond the one added "When to Use" bullet.
 
 ## 2.1.0 (2026-06-10)
 

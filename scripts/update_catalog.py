@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 from contextlib import suppress
 import hashlib
+import json
 import os
 from pathlib import Path, PurePosixPath
 import shutil
@@ -15,6 +16,7 @@ import tempfile
 import tomllib
 
 from catalog_manifest import (
+    Alias,
     CatalogError,
     Source,
     declared_skill_name,
@@ -112,6 +114,9 @@ def checkout_source(source: Source, checkout: Path, base_url: str) -> None:
     run_git("sparse-checkout", "init", "--cone", cwd=checkout)
 
     sparse_directories = {str(skill.path) for skill in source.skills}
+    for skill in source.skills:
+        for resource in skill.resources:
+            sparse_directories.add(str(resource.parent))
     for metadata_file in (source.license_file, source.notice_file):
         if metadata_file is not None and len(metadata_file.parts) > 1:
             sparse_directories.add(str(metadata_file.parent))
@@ -138,6 +143,7 @@ def copy_source_skills(
     source_root: Path,
     staged_skills: Path,
 ) -> None:
+    destinations: list[Path] = []
     for skill in source.skills:
         source_skill = source_root.joinpath(*skill.path.parts)
         assert_contained(source_skill, source_root, f"skill {skill.name}")
@@ -151,6 +157,98 @@ def copy_source_skills(
         if destination.exists():
             raise CatalogError(f"duplicate staged skill: {skill.name}")
         shutil.copytree(source_skill, destination, symlinks=True)
+        for resource in skill.resources:
+            source_resource = source_root.joinpath(*resource.parts)
+            assert_contained(
+                source_resource,
+                source_root,
+                f"resource for {skill.name}",
+            )
+            if not source_resource.is_file():
+                raise CatalogError(
+                    f"resource is missing for {skill.name}: {resource}"
+                )
+            destination_resource = destination.joinpath(*resource.parts)
+            if destination_resource.exists():
+                raise CatalogError(
+                    f"resource already exists in {skill.name}: {resource}"
+                )
+            destination_resource.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source_resource, destination_resource)
+        normalize_frontmatter_metadata(destination / "SKILL.md")
+        destinations.append(destination)
+    apply_aliases(destinations, source.aliases, source.id)
+
+
+def normalize_frontmatter_metadata(skill_file: Path) -> None:
+    lines = skill_file.read_text(encoding="utf-8").splitlines()
+    try:
+        closing = next(
+            index
+            for index, line in enumerate(lines[1:], start=1)
+            if line.strip() == "---"
+        )
+    except StopIteration as error:
+        raise CatalogError(
+            f"SKILL.md frontmatter is not closed: {skill_file}"
+        ) from error
+
+    in_metadata = False
+    for index in range(1, closing):
+        line = lines[index]
+        if line == "metadata:":
+            in_metadata = True
+            continue
+        if not in_metadata:
+            continue
+        if line and not line.startswith((" ", "\t")):
+            in_metadata = False
+            continue
+        if not line.strip():
+            continue
+        if not line.startswith("  ") or line.startswith("    ") or ":" not in line:
+            raise CatalogError(
+                f"metadata must be a flat string map: {skill_file}: {line}"
+            )
+        key, raw_value = line.strip().split(":", 1)
+        value = raw_value.strip()
+        if not value:
+            raise CatalogError(
+                f"metadata value must be a string: {skill_file}: {key}"
+            )
+        if value.startswith("[") and value.endswith("]"):
+            value = ", ".join(
+                item.strip().strip("\"'")
+                for item in value[1:-1].split(",")
+                if item.strip()
+            )
+        else:
+            value = value.strip("\"'")
+        lines[index] = f"  {key}: {json.dumps(value, ensure_ascii=False)}"
+
+    skill_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def apply_aliases(
+    skill_dirs: list[Path],
+    aliases: tuple[Alias, ...],
+    source_id: str,
+) -> None:
+    for alias in aliases:
+        replacements = 0
+        for skill_dir in skill_dirs:
+            for markdown_file in skill_dir.rglob("*.md"):
+                content = markdown_file.read_text(encoding="utf-8")
+                replacements += content.count(alias.source)
+                if alias.source in content:
+                    markdown_file.write_text(
+                        content.replace(alias.source, alias.target),
+                        encoding="utf-8",
+                    )
+        if replacements == 0:
+            raise CatalogError(
+                f"alias is unused in source {source_id}: {alias.source}"
+            )
 
 
 def metadata_text(

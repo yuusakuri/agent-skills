@@ -3,12 +3,12 @@ name: develop-solution-brief
 description: Creates a concise one-page solution overview that communicates the proposed approach, key decisions, and trade-offs. Use when pitching solutions to stakeholders, aligning teams on approach, or documenting solution intent before detailed specification.
 license: Apache-2.0
 metadata:
-  phase: develop
+  phase: "develop"
   version: "2.1.0"
-  updated: 2026-06-10
-  category: ideation
-  frameworks: [triple-diamond, lean-startup, design-thinking]
-  author: product-on-purpose
+  updated: "2026-06-10"
+  category: "ideation"
+  frameworks: "triple-diamond, lean-startup, design-thinking"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Solution Brief
@@ -27,8 +27,8 @@ A solution brief is a concise, one-page document that communicates the proposed 
 
 - Stakeholders are aligned and engineering needs the full specification -> use `deliver-prd`; the brief pitches, the PRD specifies
 - The problem is not yet framed or agreed -> use `define-problem-statement` first
-- You are recording a decision already made -> use `develop-adr` (technical) or `develop-design-rationale` (design)
-- You need to compare strategic options across the whole business model -> use `foundation-lean-canvas`
+- You are recording a decision already made -> use `documentation-and-adrs` (technical) or `develop-design-rationale` (design)
+- You need to compare strategic options across the whole business model -> use `lean-canvas`
 
 ## Instructions
 

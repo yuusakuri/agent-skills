@@ -1,14 +1,14 @@
 ---
 name: discover-interview-synthesis
-description: Synthesizes user research interviews into actionable insights, patterns, and recommendations. Use after conducting user interviews, customer calls, or usability sessions to extract and communicate findings across participants. Distinct from foundation-meeting-recap, which summarizes one internal meeting for its attendees; this skill aggregates research conversations into evidence-backed findings.
+description: Synthesizes user research interviews into actionable insights, patterns, and recommendations. Use after conducting user interviews, customer calls, or usability sessions to extract and communicate findings across participants. Distinct from summarize-meeting, which summarizes one internal meeting for its attendees; this skill aggregates research conversations into evidence-backed findings.
 license: Apache-2.0
 metadata:
-  phase: discover
+  phase: "discover"
   version: "2.2.0"
-  updated: 2026-07-05
-  category: research
-  frameworks: [triple-diamond, lean-startup, design-thinking]
-  author: product-on-purpose
+  updated: "2026-07-05"
+  category: "research"
+  frameworks: "triple-diamond, lean-startup, design-thinking"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Interview Synthesis
@@ -25,11 +25,11 @@ An interview synthesis transforms raw user research data into structured insight
 
 ## When NOT to Use
 
-- You are summarizing one internal meeting for its attendees -> use `foundation-meeting-recap`
-- You need patterns across multiple meetings over time -> use `foundation-meeting-synthesize`
-- Your data is survey responses rather than interviews -> use `measure-survey-analysis`
+- You are summarizing one internal meeting for its attendees -> use `summarize-meeting`
+- You need patterns across multiple meetings over time -> use `summarize-meeting`
+- Your data is survey responses rather than interviews -> use `sentiment-analysis`
 - The findings are synthesized and you are ready to frame the problem -> use `define-problem-statement`
-- You have synthesized findings and want to map them onto a customer's journey across stages and touchpoints -> use `discover-journey-map`
+- You have synthesized findings and want to map them onto a customer's journey across stages and touchpoints -> use `customer-journey-map`
 
 ## Instructions
 

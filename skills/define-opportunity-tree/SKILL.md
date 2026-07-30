@@ -1,14 +1,14 @@
 ---
 name: define-opportunity-tree
-description: Creates an opportunity solution tree connecting a desired outcome to customer opportunities and candidate solutions, preventing solution-first jumps in continuous discovery. Use when structuring scattered feature ideas or communicating how the roadmap traces to outcomes. For ranking an existing flat list of candidates, use define-prioritization-framework instead; this skill discovers the list, it does not score one.
+description: Creates an opportunity solution tree connecting a desired outcome to customer opportunities and candidate solutions, preventing solution-first jumps in continuous discovery. Use when structuring scattered feature ideas or communicating how the roadmap traces to outcomes. For ranking an existing flat list of candidates, use prioritization-frameworks instead; this skill discovers the list, it does not score one.
 license: Apache-2.0
 metadata:
-  phase: define
+  phase: "define"
   version: "2.2.0"
-  updated: 2026-07-04
-  category: problem-framing
-  frameworks: [triple-diamond, lean-startup, design-thinking]
-  author: product-on-purpose
+  updated: "2026-07-04"
+  category: "problem-framing"
+  frameworks: "triple-diamond, lean-startup, design-thinking"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Opportunity Solution Tree
@@ -26,10 +26,10 @@ An Opportunity Solution Tree (OST) is a visual framework for product discovery t
 
 ## When NOT to Use
 
-- You need to score and rank a flat list of known candidates -> use `define-prioritization-framework`; the tree structures discovery, not a ranking exercise
+- You need to score and rank a flat list of known candidates -> use `prioritization-frameworks`; the tree structures discovery, not a ranking exercise
 - You have one specific problem to frame for a team -> use `define-problem-statement`
 - You are ready to test a single assumption -> use `define-hypothesis`, then `measure-experiment-design`
-- The outcome you want to drive is not yet agreed -> set it first with `foundation-okr-writer`; a tree without an agreed outcome decorates opinions
+- The outcome you want to drive is not yet agreed -> set it first with `brainstorm-okrs`; a tree without an agreed outcome decorates opinions
 
 ## Instructions
 

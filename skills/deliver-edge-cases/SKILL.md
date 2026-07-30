@@ -3,12 +3,12 @@ name: deliver-edge-cases
 description: Documents edge cases, error states, boundary conditions, race conditions, and recovery paths for a feature - the systematic catalog of what can go wrong and the failure modes to design for. Use during specification to map the failure surface and ensure comprehensive coverage, or during QA planning to identify boundary and limit scenarios to test. Distinct from deliver-acceptance-criteria, which writes story-level Given/When/Then checks; this skill produces the whole-feature edge-case catalog.
 license: Apache-2.0
 metadata:
-  phase: deliver
+  phase: "deliver"
   version: "2.1.1"
-  updated: 2026-06-13
-  category: specification
-  frameworks: [triple-diamond, lean-startup, design-thinking]
-  author: product-on-purpose
+  updated: "2026-06-13"
+  category: "specification"
+  frameworks: "triple-diamond, lean-startup, design-thinking"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Edge Cases
@@ -28,8 +28,8 @@ An edge cases document systematically catalogs the unusual, boundary, and error 
 
 - You need story-scoped Given/When/Then checks for handoff -> use `deliver-acceptance-criteria`; this skill catalogs the whole feature's failure surface
 - The feature is not specified enough to enumerate inputs, states, and limits -> use `deliver-prd` first
-- A production incident already happened and you want the learning banked -> use `iterate-lessons-log`, then update this catalog with the new case
-- You need readiness coordination for a launch, not failure analysis -> use `deliver-launch-checklist`
+- A production incident already happened and you want the learning banked -> use `retro`, then update this catalog with the new case
+- You need readiness coordination for a launch, not failure analysis -> use `shipping-and-launch`
 
 ## Instructions
 

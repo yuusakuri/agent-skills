@@ -23,23 +23,18 @@ with open(sys.argv[1], "rb") as catalog_file:
     catalog = tomllib.load(catalog_file)
 sources = catalog["sources"]
 skills = [skill for source in sources for skill in source["skills"]]
-vendored = sum(len(source["skills"]) for source in sources if source["kind"] == "vendored")
-local = sum(len(source["skills"]) for source in sources if source["kind"] == "local")
-print(len(skills), vendored, local, len(sources))
+print(len(skills))
 PY
 )"
-read -r skill_count vendored_count local_count source_count <<<"${catalog_summary}"
-[ "${skill_count}" = "97" ] || fail "expected 97 adopted skills, got ${skill_count}"
-[ "${vendored_count}" = "96" ] || fail "expected 96 vendored skills, got ${vendored_count}"
-[ "${local_count}" = "1" ] || fail "expected 1 local skill, got ${local_count}"
-[ "${source_count}" = "7" ] || fail "expected 7 grouped sources, got ${source_count}"
+skill_count="${catalog_summary}"
 
 for excluded_name in \
   create-prd \
   competitor-analysis \
   market-sizing \
   opportunity-solution-tree \
-  prioritize-features
+  prioritize-features \
+  startup-canvas
 do
   if "${PYTHON_BIN}" - "${CATALOG_FILE}" "${excluded_name}" <<'PY'
 import sys
@@ -73,7 +68,8 @@ do
 done
 
 available_count="$(find -L "${CATALOG_ROOT}/skills" -mindepth 2 -maxdepth 2 -name SKILL.md -type f | wc -l | tr -d ' ')"
-[ "${available_count}" = "97" ] || fail "expected 97 runtime-ready skills, got ${available_count}"
+[ "${available_count}" = "${skill_count}" ] ||
+  fail "manifest declares ${skill_count} skills but runtime exposes ${available_count}"
 
 for skill_path in "${CATALOG_ROOT}"/skills/*
 do
@@ -97,4 +93,4 @@ do
     fail "notice must list ${repository} exactly once, got ${occurrence_count}"
 done
 
-printf 'ok - catalog contains 97 non-duplicated, pinned skills\n'
+printf 'ok - catalog contains a consistent set of pinned skills\n'

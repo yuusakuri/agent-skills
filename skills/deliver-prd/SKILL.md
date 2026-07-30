@@ -3,12 +3,12 @@ name: deliver-prd
 description: Creates a comprehensive Product Requirements Document that aligns stakeholders on what to build, why, and how success will be measured. Use when specifying features, epics, or product initiatives for engineering handoff.
 license: Apache-2.0
 metadata:
-  phase: deliver
+  phase: "deliver"
   version: "2.1.0"
-  updated: 2026-06-10
-  category: specification
-  frameworks: [triple-diamond, lean-startup, design-thinking]
-  author: product-on-purpose
+  updated: "2026-06-10"
+  category: "specification"
+  frameworks: "triple-diamond, lean-startup, design-thinking"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Product Requirements Document (PRD)
@@ -27,8 +27,8 @@ A Product Requirements Document is the primary specification artifact that commu
 
 - The problem is still unframed or contested -> use `define-problem-statement` first; a PRD assumes an agreed problem
 - You need a one-page pitch to align stakeholders on an approach -> use `develop-solution-brief`; the PRD comes after that alignment
-- You only need the work broken into tickets for a sprint -> use `deliver-user-stories`
-- You are recording a technical or architectural decision -> use `develop-adr`
+- You only need the work broken into tickets for a sprint -> use `user-stories`
+- You are recording a technical or architectural decision -> use `documentation-and-adrs`
 
 ## Instructions
 

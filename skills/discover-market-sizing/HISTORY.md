@@ -9,10 +9,10 @@
 
 Released in [v2.30.0](../../site/src/content/docs/releases/Release_v2.30.0.md). Effort: M-35 (trust repair sweep).
 
-The 2026-07-04 deep audit found this skill had no "When NOT to Use" section at all, leaving its boundary against `define-prioritization-framework`, `discover-competitive-analysis`, and `foundation-persona` unstated.
+The 2026-07-04 deep audit found this skill had no "When NOT to Use" section at all, leaving its boundary against `prioritization-frameworks`, `discover-competitive-analysis`, and `user-personas` unstated.
 
 ### Changes
-- Added a "When NOT to Use" section naming the internal-tool-ROI non-use case (already implied by the existing "Scope" note in Core principle) plus pointers to `define-prioritization-framework`, `discover-competitive-analysis`, and `foundation-persona`.
+- Added a "When NOT to Use" section naming the internal-tool-ROI non-use case (already implied by the existing "Scope" note in Core principle) plus pointers to `prioritization-frameworks`, `discover-competitive-analysis`, and `user-personas`.
 - Heading-normalization sweep (WS-T8b, folded into this same v2.30.0 row rather than a separate bump): "Output format" to "Output Format" and "Quality checklist" to "Quality Checklist", two of the catalog's drifted heading-spelling instances the 2026-07-04 deep audit flagged.
 
 No change to the sizing-framework flow, refusal protocols, or output contract.

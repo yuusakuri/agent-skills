@@ -46,7 +46,9 @@ jobs:
         run: bash tests/catalog_test.sh
 
       - name: Check consumer-ready layout
-        run: bash tests/consumer_test.sh
+        run: |
+          bash tests/sync_agent_links_test.sh
+          bash tests/consumer_test.sh
 
       - name: Validate packaged UI skill
         run: |

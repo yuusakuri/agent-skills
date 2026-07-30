@@ -3,12 +3,12 @@ name: discover-competitive-analysis
 description: Creates a structured competitive analysis comparing features, pricing, and positioning across 3-5 direct and indirect competitors, with a 2x2 map and actionable strategic recommendations. Use before entering a market, planning differentiation, or after losing deals. For market size rather than competitor positioning, use discover-market-sizing instead.
 license: Apache-2.0
 metadata:
-  phase: discover
+  phase: "discover"
   version: "2.2.0"
-  updated: 2026-07-04
-  category: research
-  frameworks: [triple-diamond, lean-startup, design-thinking]
-  author: product-on-purpose
+  updated: "2026-07-04"
+  category: "research"
+  frameworks: "triple-diamond, lean-startup, design-thinking"
+  author: "product-on-purpose"
 ---
 <!-- PM-Skills | https://github.com/product-on-purpose/pm-skills | Apache 2.0 -->
 # Competitive Analysis
@@ -27,7 +27,7 @@ A competitive analysis provides structured insight into the competitive landscap
 ## When NOT to Use
 
 - You need market size rather than competitor positioning -> use `discover-market-sizing`
-- You are stress-testing strategic differentiation across the whole business model -> use `foundation-lean-canvas`, or `tool-foundation-sprint-differentiation` inside a Foundation Sprint
+- You are stress-testing strategic differentiation across the whole business model -> use `lean-canvas`, or `positioning-ideas` inside a Foundation Sprint
 - You want to understand why customers switch products -> use `define-jtbd-canvas`; it examines competing solutions through the job lens
 - The landscape is already mapped and you need the problem framed -> use `define-problem-statement`
 
