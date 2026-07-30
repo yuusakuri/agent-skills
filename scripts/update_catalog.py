@@ -203,7 +203,10 @@ def tree_entries(root: Path) -> dict[str, tuple[str, str, bool]]:
     if not root.is_dir():
         return entries
     for path in sorted(root.rglob("*")):
-        relative_path = path.relative_to(root).as_posix()
+        relative = path.relative_to(root)
+        if "__pycache__" in relative.parts or path.suffix in {".pyc", ".pyo"}:
+            continue
+        relative_path = relative.as_posix()
         if path.is_symlink():
             entries[relative_path] = ("symlink", os.readlink(path), False)
         elif path.is_file():

@@ -162,6 +162,19 @@ PATH="${FAKE_BIN}:${PATH}" \
     --target "${TARGET_ROOT}" >/dev/null
 printf 'ok - check mode accepts a matching snapshot\n'
 
+mkdir -p "${TARGET_ROOT}/external-one/__pycache__"
+printf 'runtime cache\n' >"${TARGET_ROOT}/external-one/__pycache__/core.pyc"
+PATH="${FAKE_BIN}:${PATH}" \
+  FETCH_LOG="${FETCH_LOG}" \
+  REAL_GIT_BIN="${REAL_GIT_BIN}" \
+  AGENT_SKILLS_GITHUB_BASE_URL="file://${REMOTE_ROOT}" \
+  "${PYTHON_BIN}" "${UPDATER}" \
+    --check \
+    --catalog "${CATALOG_ROOT}/catalog.toml" \
+    --catalog-root "${CATALOG_ROOT}" \
+    --target "${TARGET_ROOT}" >/dev/null
+printf 'ok - check mode ignores Python runtime caches\n'
+
 printf '\n# drift\n' >>"${TARGET_ROOT}/external-one/SKILL.md"
 if PATH="${FAKE_BIN}:${PATH}" \
   FETCH_LOG="${FETCH_LOG}" \
@@ -177,4 +190,4 @@ if PATH="${FAKE_BIN}:${PATH}" \
 fi
 printf 'ok - check mode rejects content drift\n'
 
-printf '1..7\n'
+printf '1..8\n'
