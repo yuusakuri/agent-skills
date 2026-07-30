@@ -1,36 +1,47 @@
 # agent-skills
 
-開発プロジェクトへsubmoduleとして組み込む、汎用のCodex向けSkillカタログです。
+どの開発プロジェクトでも使える、Codex向けの汎用Skillカタログです。
 
-再帰的にcloneするだけで、固定バージョンのSkill 97件を利用できます。利用側でインストールスクリプトを実行したり、プロジェクト間でローカルディレクトリを共有したりする必要はありません。
+このリポジトリを通常どおりcloneすると、固定バージョンのSkill 97件がすべて含まれます。追加インストール、再帰clone、共有ローカルディレクトリは不要です。
 
-このリポジトリは次を管理します。
-
-- 重複を除いた採用Skill一覧と用途
-- 外部Skillの固定コミット
-- 実行時にそのまま参照できるSkill一式
-- 外部Skillのライセンスと取得元
-- 仕様書・設計書・提案書向けの独自Skill
-
-採用一覧の正本は [`skills.lock.tsv`](skills.lock.tsv) です。
+| 管理対象 | 方針 |
+| --- | --- |
+| Skill本体 | `skills/<skill-name>/`へフラットに配置 |
+| 採用一覧 | 重複する能力を除き、97件を採用 |
+| 外部Skill | upstreamのcommit SHAをsource単位で固定 |
+| 独自Skill | 外部Skillと同じ階層・同じ利用方法で配置 |
+| 文書作成 | 仕様書、設計書、提案書の章構成と品質確認に対応 |
+| 文書形式 | GitHub-Flavored Markdownを既定、Wordは明示指定時のみ |
+| ライセンス | upstreamごとの本文と取得元をルートの1ファイルへ集約 |
+| 作業管理 | リポジトリ内のタスクファイルではなくGitHub Issuesを使用 |
 
 ## リポジトリ構成
 
 | パス | 役割 |
 | --- | --- |
-| `skills/` | clone直後に利用するSkill一式 |
+| `skills/` | clone直後に利用できるSkill 97件 |
 | `.agents/skills` | このリポジトリ単体で利用するための`skills/`へのsymlink |
-| `skills.lock.tsv` | Skill名、取得元、固定コミット、担当する能力、起動条件 |
-| `skills/document-architecture/` | 仕様書・設計書・提案書の構成と品質確認を担う独自Skill |
-| `vendor/` | 再配布せず、再帰submoduleで取得する外部Skill |
-| `third-party-licenses/` | vendoringした外部Skillのライセンスと取得元 |
-| `scripts/update-vendored-skills.sh` | 保守時だけ使う固定スナップショット更新コマンド |
-| `scripts/validate.sh` | 重複、浮動バージョン、不正なパスを検証 |
+| `catalog.toml` | source、固定commit、ライセンス、Skill、能力、起動条件 |
+| `THIRD_PARTY_NOTICES.md` | 外部sourceの取得元とライセンス本文 |
+| `scripts/catalog_manifest.py` | TOMLの読み込みと共通検証 |
+| `scripts/validate.py` | 重複、浮動バージョン、不正なパスを検証 |
+| `scripts/update_catalog.py` | 保守時に固定スナップショットを再生成 |
 | `tests/` | カタログ、更新処理、利用側構成の回帰テスト |
+
+## 単体で利用
+
+通常のcloneだけで利用できます。
+
+```bash
+git clone https://github.com/yuusakuri/agent-skills.git
+cd agent-skills
+```
+
+clone後は`.agents/skills`から全Skillを参照できます。submoduleの初期化や更新コマンドは必要ありません。
 
 ## プロジェクトへ追加
 
-各プロジェクトが、このリポジトリを独立したsubmoduleとして固定します。
+各プロジェクトが、このリポジトリを1つのsubmoduleとして個別に固定します。
 
 ```bash
 git submodule add https://github.com/yuusakuri/agent-skills.git .agents/catalog
@@ -38,31 +49,25 @@ ln -s catalog/skills .agents/skills
 git add .gitmodules .agents/catalog .agents/skills
 ```
 
-新規cloneではsubmoduleを再帰取得します。
+プロジェクトをcloneした後は、そのプロジェクトのsubmoduleを1段だけ初期化します。
 
 ```bash
-git clone --recurse-submodules <project-repository-url>
+git submodule update --init .agents/catalog
 ```
 
-すでにclone済みの場合:
-
-```bash
-git submodule update --init --recursive
-```
-
-利用側が固定するのは`.agents/catalog`のコミットです。更新は各プロジェクトで個別に行います。
+利用側が固定するのは`.agents/catalog`のcommitです。更新は各プロジェクトで個別に行い、他プロジェクトとは共有しません。
 
 ## カタログの保守
 
-通常の利用者はこの手順を実行しません。
+通常の利用者はこの手順を実行しません。保守コマンドにはPython 3.11以上とGitが必要です。
 
-1. `skills.lock.tsv`の対象行を、40文字のコミットSHAで更新する
-2. 必要に応じて`vendor/`のnested submoduleを更新する
-3. `./scripts/update-vendored-skills.sh`で`skills/`とライセンス情報を再生成する
-4. `./scripts/update-vendored-skills.sh --check`と`./tests/*.sh`でスナップショットを検証する
+1. 変更の目的と受入条件をGitHub Issueへ記録する
+2. `catalog.toml`のsourceまたはSkillを更新する
+3. `python3 scripts/update_catalog.py`で`skills/`と通知文書を再生成する
+4. `python3 scripts/update_catalog.py --check`と`tests/*.sh`で検証する
 
-同じ能力を担うSkillを追加するときは、既存の`capability`と比較し、置換か併存かを明示します。
+同じ能力を担うSkillを追加するときは既存の`capability`と比較し、置換か併存かをIssueとレビューで明示します。
 
 ## ライセンス
 
-このリポジトリ独自のコードと文書はMIT Licenseです。vendoringした外部Skillには[`third-party-licenses/`](third-party-licenses/)の条件が適用されます。ライセンス宣言を確認できない外部Skillは再配布せず、[`vendor/`](vendor/)のnested submoduleから固定コミットを取得します。
+このリポジトリ独自のコードと文書は[MIT License](LICENSE)です。外部Skillの取得元、固定commit、ライセンス本文は[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)にまとめています。

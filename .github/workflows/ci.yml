@@ -22,25 +22,38 @@ jobs:
 
     steps:
       - name: Check out catalog
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-          submodules: recursive
 
-      - name: Check shell syntax
-        run: bash -n scripts/*.sh tests/*.sh
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Check script syntax
+        run: |
+          python -m py_compile scripts/*.py
+          bash -n tests/*.sh
 
       - name: Run validator tests
-        run: ./tests/validate_test.sh
+        run: bash tests/validate_test.sh
 
       - name: Run snapshot updater tests
-        run: ./tests/update_vendored_skills_test.sh
+        run: bash tests/update_catalog_test.sh
 
       - name: Check catalog policy
-        run: ./tests/catalog_test.sh
+        run: bash tests/catalog_test.sh
 
       - name: Check consumer-ready layout
-        run: ./tests/consumer_test.sh
+        run: bash tests/consumer_test.sh
+
+      - name: Validate packaged UI skill
+        run: |
+          python skills/ui-ux-pro-max/scripts/validate_data.py
+          python -m unittest discover \
+            -s skills/ui-ux-pro-max/scripts/tests \
+            -p "test_*.py"
 
       - name: Verify committed snapshot
-        run: ./scripts/update-vendored-skills.sh --check
+        run: python scripts/update_catalog.py --check
