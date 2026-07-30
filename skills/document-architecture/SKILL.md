@@ -1,6 +1,6 @@
 ---
 name: document-architecture
-description: Coauthor, restructure, and quality-review formal system documents with a single canonical outline and traceable decisions. Use when creating or revising a requirements definition, technical specification, basic design, detailed design, system proposal, or business proposal, including Markdown or Word deliverables. Route PRDs, ADRs, unresolved technical choices, and implementation plans to their existing specialist skills instead of creating competing artifacts.
+description: Coauthor, restructure, and quality-review formal system documents with a single canonical outline and traceable decisions. Use when creating or revising a requirements definition, technical specification, basic design, detailed design, system proposal, or business proposal. Default to GitHub-Flavored Markdown; create Word only when explicitly requested. Route PRDs, ADRs, unresolved technical choices, and implementation plans to their existing specialist skills instead of creating competing artifacts.
 ---
 
 # Document Architecture
@@ -47,6 +47,16 @@ Update or reference an existing canonical artifact. Never create a second docume
 
 Ask only for information that changes the structure, scope, or decision. When information is unavailable, mark the specific assumption and its consequence instead of inventing data.
 
+## Default to GitHub Markdown
+
+GitHub-Flavored Markdown is the default output.
+
+- Store the canonical document as a `.md` file in the project repository.
+- Use standard GitHub heading levels, relative links, tables, task lists, and fenced code blocks.
+- Use Mermaid only when a relationship, sequence, or boundary is materially clearer as a diagram.
+- Keep one canonical statement for each requirement or decision and link to it instead of copying it.
+- Prefer reviewable text diffs and repository history over presentation-only formatting.
+
 ## Maintain traceability
 
 Use stable identifiers when the document feeds another lifecycle artifact.
@@ -62,9 +72,9 @@ Use stable identifiers when the document feeds another lifecycle artifact.
 
 Do not assign identifiers to narrative that will never be referenced. Keep identifiers stable when wording changes.
 
-## Create Word deliverables
+## Create Word deliverables only on request
 
-When the requested deliverable is Word:
+Only create a Word deliverable when explicitly requested by the user or required by the named delivery contract.
 
 1. Use `assets/templates/base-document.docx` as the common style source.
 2. Generate the document chapters from the selected reference; do not copy a chapter list from the template.
