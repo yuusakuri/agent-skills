@@ -25,7 +25,9 @@ awk -F '\t' '
   /^[[:space:]]*$/ { next }
   NF != 7 { fail("expected 7 tab-separated columns") }
   $1 !~ /^[a-z0-9]+(-[a-z0-9]+)*$/ { fail("invalid skill name: " $1) }
-  $2 != "external" && $2 != "local" { fail("invalid kind for " $1 ": " $2) }
+  $2 != "external" && $2 != "local" && $2 != "submodule" {
+    fail("invalid kind for " $1 ": " $2)
+  }
   $4 == "" || $4 ~ /^\// || $4 ~ /(^|\/)\.\.(\/|$)/ || $4 ~ /(^|\/)\.(\/|$)/ {
     fail("path must be repository-relative for " $1 ": " $4)
   }
@@ -39,6 +41,14 @@ awk -F '\t' '
     }
     if ($5 !~ /^[0-9a-fA-F]{40}$/) {
       fail("external revision must be a 40-character commit for " $1)
+    }
+  }
+  $2 == "submodule" {
+    if ($3 !~ /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/) {
+      fail("invalid submodule repository for " $1 ": " $3)
+    }
+    if ($5 !~ /^[0-9a-fA-F]{40}$/) {
+      fail("submodule revision must be a 40-character commit for " $1)
     }
   }
   $2 == "local" {
@@ -67,6 +77,20 @@ while IFS=$'\t' read -r skill_name skill_kind _repository skill_path _revision _
   declared_name="$(sed -n 's/^name:[[:space:]]*//p' "${skill_file}" | head -1 | tr -d '"')"
   [ "${declared_name}" = "${skill_name}" ] ||
     fail "local skill name mismatch: lock=${skill_name}, SKILL.md=${declared_name:-missing}"
+done <"${LOCK_FILE}"
+
+while IFS=$'\t' read -r skill_name skill_kind repository skill_path _revision _capability _activation; do
+  [ "${skill_name}" = "name" ] && continue
+  [ -n "${skill_name}" ] || continue
+  [ "${skill_kind}" = "submodule" ] || continue
+
+  vendor_name="${repository//\//--}"
+  skill_file="${CATALOG_ROOT}/vendor/${vendor_name}/${skill_path}/SKILL.md"
+  [ -f "${skill_file}" ] || fail "submodule skill is missing SKILL.md: ${repository}/${skill_path}"
+
+  declared_name="$(sed -n 's/^name:[[:space:]]*//p' "${skill_file}" | head -1 | tr -d '"')"
+  [ "${declared_name}" = "${skill_name}" ] ||
+    fail "submodule skill name mismatch: lock=${skill_name}, SKILL.md=${declared_name:-missing}"
 done <"${LOCK_FILE}"
 
 skill_count="$(awk -F '\t' 'NR > 1 && NF > 0 { count++ } END { print count + 0 }' "${LOCK_FILE}")"
