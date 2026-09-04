@@ -109,7 +109,8 @@ def verify_skill(skill_dir: Path, expected_name: str) -> None:
 def checkout_source(source: Source, checkout: Path, base_url: str) -> None:
     checkout.mkdir(parents=True)
     run_git("init", "-q", cwd=checkout)
-    repository_url = f"{base_url.rstrip('/')}/{source.repository}.git"
+    source_base_url = base_url if source.host == "github.com" else f"https://{source.host}"
+    repository_url = f"{source_base_url.rstrip('/')}/{source.repository}.git"
     run_git("remote", "add", "origin", repository_url, cwd=checkout)
     run_git("sparse-checkout", "init", "--cone", cwd=checkout)
 
@@ -178,6 +179,18 @@ def copy_source_skills(
         normalize_frontmatter_metadata(destination / "SKILL.md")
         destinations.append(destination)
     apply_aliases(destinations, source.aliases, source.id)
+
+
+def apply_source_patch(source: Source, checkout: Path, catalog_root: Path) -> None:
+    if source.patch_file is None:
+        return
+    patch = catalog_root.joinpath(*source.patch_file.parts)
+    assert_contained(patch, catalog_root, f"patch for {source.id}")
+    if not patch.is_file():
+        raise CatalogError(f"source patch is missing: {source.id}")
+    # Check and apply against the pinned checkout; never modify the live snapshot.
+    run_git("apply", "--check", "--", str(patch), cwd=checkout)
+    run_git("apply", "--", str(patch), cwd=checkout)
 
 
 def normalize_frontmatter_metadata(skill_file: Path) -> None:
@@ -271,7 +284,7 @@ def notice_section(source: Source, source_root: Path) -> str:
     lines = [
         f"## {source.repository}",
         "",
-        f"- Repository: https://github.com/{source.repository}",
+        f"- Repository: https://{source.host}/{source.repository}",
         f"- Revision: `{source.revision}`",
         f"- License: `{source.license}`",
         f"- Upstream license file: `{source.license_file}`",
@@ -282,6 +295,11 @@ def notice_section(source: Source, source_root: Path) -> str:
         metadata_text(source, source_root, source.license_file),
         "```",
     ]
+    if source.patch_file is not None:
+        lines[6:6] = [
+            f"- Adaptation: {source.adaptation}",
+            f"- Reproducible patch: `{source.patch_file}`",
+        ]
     if source.notice_file is not None:
         lines.extend(
             [
@@ -380,6 +398,7 @@ def update() -> int:
                 continue
             checkout = temporary_root / "sources" / source.id
             checkout_source(source, checkout, base_url)
+            apply_source_patch(source, checkout, catalog_root)
             copy_source_skills(source, checkout, staged_skills)
             notice_sections.append(notice_section(source, checkout))
 

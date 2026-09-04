@@ -29,6 +29,7 @@ Skills カタログです。Skill 本体をリポジトリに含めているた�
 | `.agents/skills` | Codex 用エントリーポイント |
 | `.claude/skills/` | Claude Code 用の個別 Skill エントリーポイント |
 | `catalog.toml` | 外部取得元、固定 commit、ライセンス、同梱リソース、名前の対応関係 |
+| `translations/` | 固定した原文に適用する日本語訳と配置の差分 |
 | `THIRD_PARTY_NOTICES.md` | 外部取得元とライセンス本文を source ごとに集約した通知 |
 | `scripts/update_catalog.py` | 固定した外部 source から正本を再生成 |
 | `scripts/sync_agent_links.py` | Codex と Claude Code のエントリーポイントを同期・検証 |
@@ -76,6 +77,19 @@ submodule の commit は各プロジェクトが個別に保持するため、�
 
 ## 文書作成
 
+文章の執筆と推敲には、次の Skill を利用できます。
+
+| Skill | 内容 | 言語とライセンス |
+|---|---|---|
+| `writing-clearly-and-concisely` | 段落構成、具体性、簡潔さ、並列関係、肯定の形での記述 | 日本語訳。提供元の表記は Public Domain |
+| `technical-writing` | 読者と目的に応じた文書構成、技術的な意味を保った推敲、レビュー、文書種別ごとのテンプレート | 日本語訳。CC BY-NC-SA 4.0（非営利・継承条件あり） |
+| `japanese-tech-writing` | 日本語の段落と論証、文脈、用語の一貫性、冗長性、表現の抑制 | 日本語原文。Unlicense |
+
+`writing-clearly-and-concisely` は文章構成の指針を扱い、英文法と英語固有の
+語法は対象に含みません。`technical-writing` は参照文書、テンプレート、
+画面表示用メタデータも日本語です。各 Skill の `NOTICE.md` に取得元と
+日本語版の適用範囲を記載しています。
+
 `document-architecture` は、次の正式文書を共同執筆・再構成・品質確認する
 ための Skill です。
 
@@ -113,6 +127,11 @@ for test_file in tests/*.sh; do bash "${test_file}"; done
 外部 source は `catalog.toml` の完全な commit SHA で固定します。共通参照
 ファイルは、それを使う Skill の内部へ取り込み、単独の Skill
 ディレクトリとしても自己完結する状態を保ちます。
+
+日本語版の source は、固定 commit の取得後に `patch_file` を適用して
+再生成します。`translations/` の差分は原文と日本語版を対応づけ、
+`--check` は日本語版を含む同梱内容との一致を確認します。
+Gist の source は `host = "gist.github.com"` で指定します。
 
 ## ライセンス
 

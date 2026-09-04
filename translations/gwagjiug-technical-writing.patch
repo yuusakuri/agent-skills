@@ -1,0 +1,1306 @@
+diff --git a/skills/technical-writing/LICENSE-CONTENT.md b/skills/technical-writing/LICENSE-CONTENT.md
+new file mode 100644
+index 0000000..bb7483c
+--- /dev/null
++++ b/skills/technical-writing/LICENSE-CONTENT.md
+@@ -0,0 +1,16 @@
++# Content License
++
++Skill instructions, reference files, templates, READMEs, and other writing guidance in this repository are licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0).
++
++This license is used because the source guidance adapted by this project is distributed under CC BY-NC-SA 4.0.
++
++You may share and adapt the content if you:
++
++- give appropriate credit,
++- do not use it for commercial purposes,
++- distribute adaptations under the same license, and
++- indicate if changes were made.
++
++Full license text: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
++
++The repository scripts and tests are separately licensed under MIT. See `LICENSE`.
+diff --git a/skills/technical-writing/NOTICE.md b/skills/technical-writing/NOTICE.md
+new file mode 100644
+index 0000000..cdcaa30
+--- /dev/null
++++ b/skills/technical-writing/NOTICE.md
+@@ -0,0 +1,23 @@
++# Notices
++
++This repository adapts and translates technical writing guidance from:
++
++- Toss `technical-writing`: https://github.com/toss/technical-writing
++
++The Toss source repository is licensed under CC BY-NC-SA 4.0. This project preserves that content license for skill instructions, reference files, templates, READMEs, and other writing guidance.
++
++The adapted guidance is not a verbatim mirror. It is reorganized into Claude Code and Codex skill workflows, reference files, review rubrics, and reusable templates for developer-facing technical documentation and technical articles.
++
++Structural inspiration was taken from:
++
++- `epoko77-ai/im-not-ai`: https://github.com/epoko77-ai/im-not-ai
++
++Scripts and tests in this repository are original utility code for packaging and validation and are licensed under MIT.
++
++## 日本語版
++
++提供元： https://github.com/gwagjiug/technical-writing
++
++固定版： `5d8ef7a8de5435cc5a03367678b86fc9dd2a078f`
++
++スキル本文、参照文書、テンプレート、画面表示用メタデータの日本語訳。コンテンツのライセンスは CC BY-NC-SA 4.0。
+diff --git a/skills/technical-writing/SKILL.md b/skills/technical-writing/SKILL.md
+index 46fb210..4342ce5 100644
+--- a/skills/technical-writing/SKILL.md
++++ b/skills/technical-writing/SKILL.md
+@@ -1,39 +1,39 @@
+ ---
+ name: technical-writing
+-description: Draft, review, restructure, and polish developer-facing technical documentation and technical articles. Use when Codex needs to work on tutorials, how-to guides, troubleshooting docs, API/reference docs, conceptual explanations, release or migration guides, or technical blog/article drafts; evaluate audience fit, information architecture, headings, overview, concrete examples, terminology consistency, compactness, and sentence-level clarity while preserving facts, code, commands, API names, versions, warnings, and product behavior.
++description: 開発者向けの技術文書と技術記事を執筆、レビュー、再構成、推敲する。チュートリアル、操作ガイド、トラブルシューティング、API・リファレンス文書、概念の解説、リリース・移行ガイド、技術ブログ・記事の草稿を扱う場合に使用する。事実、コード、コマンド、API名、バージョン、警告、製品の動作を保持しながら、読者との適合性、情報構成、見出し、概要、具体例、用語の一貫性、簡潔さ、文単位の明確さを評価する。
+ ---
+ 
+-# Technical Writing
++# 技術文書の執筆
+ 
+-## Core Workflow
++## 作業の流れ
+ 
+-1. Identify the audience, task, and document type before editing. If the user already gave enough context, proceed with the best matching type.
+-2. Select the structure from `references/document-types.md` and the matching template from `assets/templates/` when creating or reorganizing a draft.
+-3. Apply the information architecture principles in `references/structure-principles.md`: one topic per page, value first, effective headings, overview, predictable order, and sufficient background.
+-4. Polish sentences with `references/sentence-style.md`: clear subjects, active voice, compactness, concreteness, natural expression, and terminology consistency.
+-5. Review with `references/review-rubric.md`; report findings before broad rewrites when the user asks for a review.
++1. 編集前に、読者、読者が行う作業、文書の種類を特定する。利用者から十分な情報が得られている場合は、最も合う種類を選んで進める。
++2. 草稿の作成や再構成では、`references/document-types.md` から構成を選び、`assets/templates/` から対応するテンプレートを選ぶ。
++3. `references/structure-principles.md` の情報構成の原則を適用する。1ページ1話題、価値を先に示すこと、効果的な見出し、概要、予測しやすい順序、十分な背景説明を扱う。
++4. `references/sentence-style.md` に従って文章を推敲する。明確な主語、能動態、簡潔さ、具体性、自然な表現、用語の一貫性を確認する。
++5. `references/review-rubric.md` でレビューする。利用者がレビューを求めた場合は、大幅に書き換える前に指摘事項を報告する。
+ 
+-## Task Routing
++## 作業別の参照先
+ 
+-- **Draft or rewrite a full document**: read `document-types.md`, choose one template, then draft directly with placeholders resolved from the user's context.
+-- **Review an existing draft**: read `review-rubric.md`; return severity-ranked findings with concrete fixes and a short summary.
+-- **Restructure notes or a rough draft**: read `structure-principles.md`; produce an outline first, then rewrite only if asked.
+-- **Polish prose**: read `sentence-style.md`; keep the original meaning and technical surface intact.
+-- **Create prompts or AI-assisted workflows**: read `prompt-workflows.md`; generate reusable prompts for drafting, structuring, or reviewing.
+-- **Check source/license boundaries**: read `source-map.md`.
++- 文書全体の執筆・書き直し：`document-types.md` を読み、テンプレートを1つ選び、利用者から得た情報で仮置きの項目を埋めながら直接執筆する。
++- 既存の草稿のレビュー：`review-rubric.md` を読み、重大度順の指摘事項、具体的な修正方法、短い要約を返す。
++- メモや粗い草稿の再構成：`structure-principles.md` を読み、先に章立てを作る。本文の書き直しは依頼された場合に行う。
++- 文章の推敲：`sentence-style.md` を読み、元の意味と技術的な記述を維持する。
++- プロンプトやAIを使った執筆手順の作成：`prompt-workflows.md` を読み、執筆、構成、レビューに再利用できるプロンプトを作る。
++- 出典とライセンスの適用範囲の確認：`source-map.md` を読む。
+ 
+-## Guardrails
++## 保持する事項
+ 
+-- Preserve code blocks, commands, API identifiers, parameter names, version numbers, warnings, error messages, dates, metrics, and product behavior unless the user explicitly asks to change them.
+-- Do not invent missing technical facts. Mark gaps as questions or TODOs.
+-- Prefer concrete examples, conditions, prerequisites, and expected results over vague benefits.
+-- Keep headings predictable and keyword-rich; avoid clever titles when users need searchability.
+-- Put the reader's value or outcome before implementation details.
+-- For Korean-language drafts, apply the Korean-specific naturalness notes in `sentence-style.md`; for English drafts, preserve idiomatic English and avoid literal translationese.
++- 利用者から明示的な変更依頼がない限り、コードブロック、コマンド、API識別子、パラメーター名、バージョン番号、警告、エラーメッセージ、日付、測定値、製品の動作を保持する。
++- 不明な技術的事実を作らない。不足箇所は質問またはTODOとして示す。
++- 曖昧な利点より、具体例、条件、前提、期待する結果を示す。
++- 見出しは予測しやすく、検索に必要な語を含むものにする。検索しやすさが必要な場面で、凝った見出しを使わない。
++- 実装の詳細より先に、読者にとっての価値や得られる結果を示す。
++- 韓国語の草稿には、`sentence-style.md` の韓国語の自然さに関する注意事項を適用する。英語の草稿では、自然な英語表現を維持し、逐語訳調を避ける。
+ 
+-## Output Defaults
++## 出力の既定形式
+ 
+-- For reviews: provide findings first, ordered by severity, with file/section references when available.
+-- For drafts: provide the finished draft unless the user asks for only an outline.
+-- For outlines: include the intended reader, document type, section list, and cross-link suggestions.
+-- For rewrites: mention preserved constraints and any unresolved factual gaps.
++- レビュー：指摘事項を先に示し、重大度順に並べる。可能であればファイルや節の位置を示す。
++- 草稿：章立てだけを求められた場合を除き、完成した草稿を返す。
++- 章立て：想定読者、文書の種類、節の一覧、関連文書へのリンク案を含める。
++- 書き直し：保持した制約と、未解決の事実の不足箇所を伝える。
+diff --git a/skills/technical-writing/agents/openai.yaml b/skills/technical-writing/agents/openai.yaml
+index 891568e..0d912f4 100644
+--- a/skills/technical-writing/agents/openai.yaml
++++ b/skills/technical-writing/agents/openai.yaml
+@@ -1,4 +1,4 @@
+ interface:
+-  display_name: "Technical Writing"
+-  short_description: "Draft and review developer docs"
+-  default_prompt: "Use $technical-writing to review this developer guide for structure, clarity, and sentence-level quality."
++  display_name: "技術文書の執筆"
++  short_description: "開発者向け文書の執筆とレビュー"
++  default_prompt: "$technical-writingを使い、この開発者向けガイドの構成、明確さ、文単位の品質をレビューしてください。"
+diff --git a/skills/technical-writing/assets/templates/explanation-doc.md b/skills/technical-writing/assets/templates/explanation-doc.md
+index 4abde3d..f4aeaf4 100644
+--- a/skills/technical-writing/assets/templates/explanation-doc.md
++++ b/skills/technical-writing/assets/templates/explanation-doc.md
+@@ -1,25 +1,25 @@
+-# [Concept Name]
++# [概念名]
+ 
+-## Overview
++## 概要
+ 
+-Explain the concept and why it matters to the reader.
++概念と、それが読者にとって重要な理由を説明する。
+ 
+-## Background
++## 背景
+ 
+-Give the context required to understand the concept.
++概念の理解に必要な背景を示す。
+ 
+-## How It Works
++## 仕組み
+ 
+-Describe the mechanism, flow, or architecture.
++仕組み、流れ、構成を説明する。
+ 
+-## Tradeoffs
++## 利点と欠点
+ 
+-Explain benefits, limits, and when not to use this approach.
++利点、限界、この方法を使うべきでない場合を説明する。
+ 
+-## Example
++## 例
+ 
+-Show a concrete scenario or simplified implementation.
++具体的な場面や、簡略化した実装を示す。
+ 
+-## Related Concepts
++## 関連する概念
+ 
+-- [Link]
++- [リンク]
+diff --git a/skills/technical-writing/assets/templates/learning-doc.md b/skills/technical-writing/assets/templates/learning-doc.md
+index 24398ae..b8e1a54 100644
+--- a/skills/technical-writing/assets/templates/learning-doc.md
++++ b/skills/technical-writing/assets/templates/learning-doc.md
+@@ -1,39 +1,39 @@
+-# [Tutorial Title]
++# [チュートリアルのタイトル]
+ 
+-## Goal
++## 目標
+ 
+-State what the reader will be able to do after completing the tutorial.
++チュートリアルを終えると何ができるかを述べる。
+ 
+-## Prerequisites
++## 前提条件
+ 
+-- [Required account, tool, package, or version]
+-- [Required background knowledge]
++- [必要なアカウント、ツール、パッケージ、バージョン]
++- [必要な背景知識]
+ 
+-## Before You Start
++## 開始前の状態
+ 
+-Explain the starting state, sample project, or environment assumptions.
++開始時の状態、サンプルプロジェクト、想定環境を説明する。
+ 
+-## Step 1: [Action]
++## 手順1：[操作]
+ 
+-Explain the action, then provide the command or code.
++操作を説明し、コマンドやコードを示す。
+ 
+ ```bash
+-[command]
++[コマンド]
+ ```
+ 
+-Expected result:
++期待する結果：
+ 
+-[What the reader should see]
++[読者が確認できるもの]
+ 
+-## Step 2: [Action]
++## 手順2：[操作]
+ 
+-[Repeat the pattern]
++[同じ形式で記載する]
+ 
+-## Verify The Result
++## 結果の確認
+ 
+-Describe how the reader can confirm that the tutorial worked.
++チュートリアルが成功したことを確認する方法を説明する。
+ 
+-## Next Steps
++## 次の作業
+ 
+-- [Related reference]
+-- [Common follow-up task]
++- [関連するリファレンス]
++- [よくある次の作業]
+diff --git a/skills/technical-writing/assets/templates/problem-solving-doc.md b/skills/technical-writing/assets/templates/problem-solving-doc.md
+index 408b737..563f0ea 100644
+--- a/skills/technical-writing/assets/templates/problem-solving-doc.md
++++ b/skills/technical-writing/assets/templates/problem-solving-doc.md
+@@ -1,37 +1,37 @@
+-# [Problem Title]
++# [問題のタイトル]
+ 
+-## Problem
++## 問題
+ 
+-Describe the symptom in terms the reader can recognize.
++読者が認識できる言葉で症状を説明する。
+ 
+-## Affected Environments
++## 影響する環境
+ 
+-- Product or package: [name]
+-- Version: [version range]
+-- Runtime or platform: [environment]
++- 製品・パッケージ：[名前]
++- バージョン：[範囲]
++- 実行環境・プラットフォーム：[環境]
+ 
+-## Cause
++## 原因
+ 
+-Explain the likely cause or state when known. Mark unknowns as TODO.
++分かっている場合は、考えられる原因や状態を説明する。不明点はTODOで示す。
+ 
+-## Solution
++## 解決方法
+ 
+-### Step 1: [Action]
++### 手順1：[操作]
+ 
+-[Instruction]
++[指示]
+ 
+-### Step 2: [Action]
++### 手順2：[操作]
+ 
+-[Instruction]
++[指示]
+ 
+-## Verify The Fix
++## 対処結果の確認
+ 
+-Explain the expected state after applying the solution.
++解決方法を適用した後に期待する状態を説明する。
+ 
+-## If It Still Fails
++## 解決しない場合
+ 
+-Provide fallback steps, diagnostic commands, or escalation guidance.
++代替手順、診断コマンド、相談先への連絡方法を示す。
+ 
+-## Related Docs
++## 関連文書
+ 
+-- [Link]
++- [リンク]
+diff --git a/skills/technical-writing/assets/templates/reference-doc.md b/skills/technical-writing/assets/templates/reference-doc.md
+index a7516c9..3bf1030 100644
+--- a/skills/technical-writing/assets/templates/reference-doc.md
++++ b/skills/technical-writing/assets/templates/reference-doc.md
+@@ -1,39 +1,39 @@
+-# [API Or Feature Name]
++# [API・機能名]
+ 
+-## Overview
++## 概要
+ 
+-Summarize what this API or feature does and when to use it.
++APIや機能が何をするか、いつ使うかを要約する。
+ 
+-## Signature
++## シグネチャ
+ 
+ ```ts
+-[signature]
++[シグネチャ]
+ ```
+ 
+-## Parameters
++## パラメーター
+ 
+-| Name | Type | Required | Default | Description |
++| 名前 | 型 | 必須 | 既定値 | 説明 |
+ | --- | --- | --- | --- | --- |
+-| `[name]` | `[type]` | `[yes/no]` | `[default]` | [description] |
++| `[名前]` | `[型]` | `[はい・いいえ]` | `[既定値]` | [説明] |
+ 
+-## Returns
++## 戻り値
+ 
+-Describe the return value, state change, or side effect.
++戻り値、状態変化、副作用を説明する。
+ 
+-## Examples
++## 例
+ 
+-### Basic Usage
++### 標準的な使い方
+ 
+ ```ts
+-[example]
++[例]
+ ```
+ 
+-## Errors And Edge Cases
++## エラーと例外的な場合
+ 
+-| Case | Behavior | How to handle |
++| 場合 | 動作 | 対応方法 |
+ | --- | --- | --- |
+-| [case] | [behavior] | [handling] |
++| [場合] | [動作] | [対応] |
+ 
+-## Related APIs
++## 関連API
+ 
+-- [Link]
++- [リンク]
+diff --git a/skills/technical-writing/assets/templates/review-report.md b/skills/technical-writing/assets/templates/review-report.md
+index 5583d2a..9d5dc99 100644
+--- a/skills/technical-writing/assets/templates/review-report.md
++++ b/skills/technical-writing/assets/templates/review-report.md
+@@ -1,17 +1,17 @@
+-# Review Report
++# レビュー報告
+ 
+-## Findings
++## 指摘事項
+ 
+-- **[Severity]** - [Section or location]: [Problem]. [Concrete fix.]
++- [重大度] — [節・位置]：[問題]。[具体的な修正方法]。
+ 
+-## Summary
++## 要約
+ 
+-[Short assessment of readiness and main risks.]
++[利用・公開できる状態かどうかと、主なリスクの短い評価。]
+ 
+-## Suggested Changes
++## 修正案
+ 
+-[Optional targeted rewrite, outline change, or checklist.]
++[必要に応じて、対象を絞った書き換え、章立ての調整、確認項目を示す。]
+ 
+-## Open Questions
++## 未解決の質問
+ 
+-- [Question that blocks accuracy or publication]
++- [正確さの確保や公開を妨げる質問]
+diff --git a/skills/technical-writing/assets/templates/technical-article.md b/skills/technical-writing/assets/templates/technical-article.md
+index a7d0cc9..2afa0ee 100644
+--- a/skills/technical-writing/assets/templates/technical-article.md
++++ b/skills/technical-writing/assets/templates/technical-article.md
+@@ -1,25 +1,25 @@
+-# [Article Title]
++# [記事のタイトル]
+ 
+-## Problem
++## 問題
+ 
+-Open with the reader-relevant problem, tension, or decision.
++読者に関係する問題、対立する要求、判断から始める。
+ 
+-## Why It Matters
++## 重要である理由
+ 
+-Explain the impact, cost, or opportunity.
++影響、費用、機会を説明する。
+ 
+-## Approach
++## 取り組み方
+ 
+-Describe what was tried, designed, built, or changed.
++試行、設計、構築、変更した内容を説明する。
+ 
+-## Details
++## 詳細
+ 
+-Provide concrete technical details, examples, diagrams, or code as needed.
++必要に応じて、具体的な技術情報、例、図、コードを示す。
+ 
+-## Result
++## 結果
+ 
+-Share evidence, outcomes, or tradeoffs.
++根拠、成果、利点と欠点を示す。
+ 
+-## Lessons
++## 学び
+ 
+-End with practical takeaways the reader can apply.
++読者が実践できる学びで締めくくる。
+diff --git a/skills/technical-writing/references/document-types.md b/skills/technical-writing/references/document-types.md
+index 31ad494..2e13a66 100644
+--- a/skills/technical-writing/references/document-types.md
++++ b/skills/technical-writing/references/document-types.md
+@@ -1,115 +1,115 @@
+-# Document Types
++# 文書の種類
+ 
+-Use this reference to choose the writing shape before drafting or reorganizing a document.
++文書を執筆または再構成する前に、書き方を選ぶために参照する。
+ 
+-## Quick Selection
++## 選び方
+ 
+-| Type | Reader goal | Use when | Required shape |
++| 種類 | 読者の目的 | 使う場面 | 必要な構成 |
+ | --- | --- | --- | --- |
+-| Learning or tutorial | Learn a new tool or workflow from zero | The reader needs a guided path | Goal, prerequisites, steps, verification, next steps |
+-| Problem-solving | Fix a specific problem | The reader has context and needs action | Problem, cause or context, solution, verification, alternatives |
+-| Reference | Look up exact behavior | The reader knows the concept and needs precision | Overview, signature or schema, parameters, return values, examples, edge cases |
+-| Explanation | Understand why or how something works | The reader needs background and mental models | Concept, context, mechanism, tradeoffs, examples |
+-| Technical article | Communicate insight, decision, or experience | The reader wants a useful narrative | Problem, stakes, approach, result, lessons, next action |
++| 学習・チュートリアル | 新しいツールや手順を最初から学ぶ | 順を追った案内が必要なとき | 目標、前提条件、手順、確認、次の作業 |
++| 問題解決 | 特定の問題を直す | 背景を理解していて対処を必要とするとき | 問題、原因・背景、解決方法、確認、代替手段 |
++| リファレンス | 正確な動作を調べる | 概念を理解していて正確な情報が必要なとき | 概要、シグネチャ・スキーマ、パラメーター、戻り値、例、例外的な場合 |
++| 解説 | なぜ、どのように動くのか理解する | 背景や仕組みの捉え方が必要なとき | 概念、背景、仕組み、利点と欠点、例 |
++| 技術記事 | 知見、判断、経験を伝える | 役立つ一連の説明を求めているとき | 問題、影響の大きさ、取り組み方、結果、学び、次の行動 |
+ 
+-## Learning Or Tutorial
++## 学習・チュートリアル
+ 
+-Use a tutorial when the reader is unfamiliar with the tool or workflow.
++読者がツールや作業手順に不慣れな場合に使う。
+ 
+-Require:
++必要な内容：
+ 
+-- a concrete outcome at the top,
+-- prerequisites and environment assumptions,
+-- ordered steps that can be followed without hidden jumps,
+-- runnable code or commands,
+-- verification after meaningful milestones,
+-- links to deeper reference material after the main path.
++- 冒頭に具体的な到達点を示す。
++- 前提条件と想定環境を示す。
++- 説明を省いた飛躍がなく、順に実行できる手順を示す。
++- 実行できるコードやコマンドを示す。
++- 意味のある区切りごとに確認方法を示す。
++- 主な手順の後に、詳しい参照資料へのリンクを置く。
+ 
+-Avoid:
++避けること：
+ 
+-- explaining every internal detail before the first useful result,
+-- mixing multiple independent goals in one page,
+-- leaving the reader without a way to confirm success.
++- 最初の有用な結果が得られる前に、内部の詳細をすべて説明する。
++- 独立した複数の目的を1ページに混在させる。
++- 成功を確認する方法を示さない。
+ 
+-Template: `../assets/templates/learning-doc.md`
++テンプレート：`../assets/templates/learning-doc.md`
+ 
+-## Problem-Solving
++## 問題解決
+ 
+-Use a problem-solving document when the reader can recognize a symptom and wants a fix.
++読者が症状を認識していて、対処を求めている場合に使う。
+ 
+-Require:
++必要な内容：
+ 
+-- a precise problem statement,
+-- affected environments or versions,
+-- direct solution steps,
+-- expected result after the fix,
+-- fallback or escalation path when the first solution does not work.
++- 問題を正確に説明する。
++- 影響する環境やバージョンを示す。
++- 解決の手順を直接示す。
++- 対処後に期待する結果を示す。
++- 最初の方法で解決しない場合の代替手順や相談先を示す。
+ 
+-Avoid:
++避けること：
+ 
+-- burying the fix after a long history,
+-- naming the problem vaguely,
+-- omitting environment-specific differences.
++- 長い経緯説明の後に対処方法を埋もれさせる。
++- 問題を曖昧な名前で呼ぶ。
++- 環境による違いを省く。
+ 
+-Template: `../assets/templates/problem-solving-doc.md`
++テンプレート：`../assets/templates/problem-solving-doc.md`
+ 
+-## Reference
++## リファレンス
+ 
+-Use a reference document when accuracy and completeness matter more than narrative flow.
++説明の流れより、正確さと網羅性が重要な場合に使う。
+ 
+-Require:
++必要な内容：
+ 
+-- stable naming and terminology,
+-- complete parameter or option lists,
+-- types, defaults, constraints, and return values,
+-- short examples for common use,
+-- edge cases and errors that change implementation choices.
++- 名称と用語を統一する。
++- パラメーターや選択肢を漏れなく列挙する。
++- 型、既定値、制約、戻り値を示す。
++- よくある使い方を短い例で示す。
++- 実装の選択に影響する例外的な場合やエラーを示す。
+ 
+-Avoid:
++避けること：
+ 
+-- marketing language,
+-- incomplete tables,
+-- hidden defaults,
+-- examples that do not compile or cannot be applied.
++- 宣伝調の表現。
++- 不完全な表。
++- 明示されていない既定値。
++- コンパイルできない例や、適用できない例。
+ 
+-Template: `../assets/templates/reference-doc.md`
++テンプレート：`../assets/templates/reference-doc.md`
+ 
+-## Explanation
++## 解説
+ 
+-Use an explanation when the reader needs a mental model.
++読者が仕組みの捉え方を必要とする場合に使う。
+ 
+-Require:
++必要な内容：
+ 
+-- the concept and why it exists,
+-- background and constraints,
+-- mechanism or architecture,
+-- tradeoffs and failure modes,
+-- concrete examples or diagrams when useful.
++- 概念と、その概念が存在する理由。
++- 背景と制約。
++- 仕組みや構成。
++- 利点と欠点、失敗時の動作。
++- 役立つ場合は、具体例や図。
+ 
+-Avoid:
++避けること：
+ 
+-- turning the explanation into a step-by-step tutorial,
+-- assuming unexplained domain knowledge,
+-- making claims without giving enough context.
++- 解説を、順を追って操作するチュートリアルに変える。
++- 説明していない分野の知識を前提にする。
++- 十分な文脈を示さずに主張する。
+ 
+-Template: `../assets/templates/explanation-doc.md`
++テンプレート：`../assets/templates/explanation-doc.md`
+ 
+-## Technical Article
++## 技術記事
+ 
+-Use a technical article when the goal is to share a decision, lesson, engineering story, or technical insight.
++判断、教訓、開発の経験、技術的な知見の共有を目的とする場合に使う。
+ 
+-Require:
++必要な内容：
+ 
+-- a reader-relevant problem or tension,
+-- the value of reading now,
+-- enough technical context to trust the story,
+-- concrete implementation details or examples,
+-- a useful conclusion grounded in the article.
++- 読者に関係する問題や対立する要求。
++- 今読むことの価値。
++- 内容を信頼できるだけの技術的な背景。
++- 具体的な実装の詳細や例。
++- 記事の内容に裏付けられた、役立つ結論。
+ 
+-Avoid:
++避けること：
+ 
+-- vague "we improved things" narratives,
+-- dramatic claims without evidence,
+-- long background before the reader understands the payoff.
++- 「改善した」というだけの曖昧な説明。
++- 根拠のない劇的な主張。
++- 読む価値が分かる前に続く、長い背景説明。
+ 
+-Template: `../assets/templates/technical-article.md`
++テンプレート：`../assets/templates/technical-article.md`
+diff --git a/skills/technical-writing/references/prompt-workflows.md b/skills/technical-writing/references/prompt-workflows.md
+index 656b465..60b546d 100644
+--- a/skills/technical-writing/references/prompt-workflows.md
++++ b/skills/technical-writing/references/prompt-workflows.md
+@@ -1,93 +1,93 @@
+-# Prompt Workflows
++# プロンプトを使った作業手順
+ 
+-Use these patterns when the user asks for reusable prompts, AI-assisted writing workflows, or team review bots.
++再利用できるプロンプト、AIを使った執筆手順、チームのレビューボットを求められた場合に使う。
+ 
+-## Drafting Prompt
++## 執筆用プロンプト
+ 
+ ```text
+-You are a technical writer for developer-facing documentation.
++あなたは開発者向け文書のテクニカルライターです。
+ 
+-Goal:
+-[What the reader should be able to do or understand]
++目標：
++[読者ができるようになること、または理解すること]
+ 
+-Audience:
+-[Experience level, role, assumptions]
++読者：
++[経験の程度、役割、前提]
+ 
+-Document type:
+-[tutorial | problem-solving | reference | explanation | technical article]
++文書の種類：
++[チュートリアル | 問題解決 | リファレンス | 解説 | 技術記事]
+ 
+-Source material:
+-[Facts, code, API behavior, constraints, links, notes]
++資料：
++[事実、コード、APIの動作、制約、リンク、メモ]
+ 
+-Instructions:
+-- Preserve all technical facts, identifiers, commands, and version numbers.
+-- Use the structure for the selected document type.
+-- Lead with reader value before implementation details.
+-- Mark missing information as TODO instead of inventing it.
+-- Include verification steps where the reader performs an action.
++指示：
++- 技術的事実、識別子、コマンド、バージョン番号をすべて保持してください。
++- 選んだ文書種別の構成を使ってください。
++- 実装の詳細より先に、読者にとっての価値を示してください。
++- 不足情報は作らず、TODOで示してください。
++- 読者が操作する箇所には、結果の確認手順を含めてください。
+ ```
+ 
+-## Structure Prompt
++## 構成用プロンプト
+ 
+ ```text
+-Turn these notes into a technical document outline.
++次のメモから技術文書の章立てを作ってください。
+ 
+-Audience:
+-[Reader]
++読者：
++[読者]
+ 
+-Reader goal:
+-[Task or understanding]
++読者の目的：
++[作業または理解したいこと]
+ 
+-Notes:
+-[Raw notes]
++メモ：
++[未整理のメモ]
+ 
+-Instructions:
+-- Choose the best document type.
+-- Use one primary topic per page.
+-- Put value and overview before details.
+-- Suggest cross-links for material that should be split out.
+-- Return only the outline, with a short rationale.
++指示：
++- 最も適した文書種別を選んでください。
++- 1ページにつき主な話題を1つにしてください。
++- 詳細より先に、価値と概要を示してください。
++- 分けるべき内容については、関連文書へのリンクを提案してください。
++- 短い理由を添えた章立てだけを返してください。
+ ```
+ 
+-## Review Prompt
++## レビュー用プロンプト
+ 
+ ```text
+-Review this draft using the technical-writing rubric.
++technical-writingの評価基準を使い、次の草稿をレビューしてください。
+ 
+-Focus:
+-[structure | clarity | examples | completeness | sentence style | all]
++重点：
++[構成 | 明確さ | 例 | 情報の充足 | 文の書き方 | すべて]
+ 
+-Draft:
+-[Paste draft or file path]
++草稿：
++[草稿またはファイルパス]
+ 
+-Instructions:
+-- Lead with severity-ranked findings.
+-- Cite section names or line numbers when available.
+-- Preserve facts and code.
+-- Suggest concrete fixes.
+-- Do not rewrite the whole draft unless requested.
++指示：
++- 重大度順の指摘事項を先に示してください。
++- 可能であれば節名や行番号を示してください。
++- 事実とコードを保持してください。
++- 具体的な修正方法を提案してください。
++- 依頼がない限り、草稿全体を書き直さないでください。
+ ```
+ 
+-## Sentence Polish Prompt
++## 文を推敲するプロンプト
+ 
+ ```text
+-Polish this developer-facing text.
++次の開発者向けの文章を推敲してください。
+ 
+-Constraints:
+-- Preserve code, commands, API names, version numbers, warnings, and product behavior.
+-- Do not add new claims.
+-- Make subjects and actions clear.
+-- Remove meta-discourse and vague wording.
+-- Keep the original register.
++制約：
++- コード、コマンド、API名、バージョン番号、警告、製品の動作を保持してください。
++- 新しい主張を足さないでください。
++- 主語と動作を明確にしてください。
++- 文章自体についての前置きや説明、曖昧な表現を取り除いてください。
++- 元の文体を保持してください。
+ 
+-Text:
+-[Draft]
++文章：
++[草稿]
+ ```
+ 
+-## Prompt Review Checklist
++## プロンプトの確認項目
+ 
+-- Does the prompt state the reader and document type?
+-- Does it separate source facts from instructions?
+-- Does it tell the model not to invent missing facts?
+-- Does it include preservation rules for technical surfaces?
+-- Does it define the expected output shape?
++- 読者と文書種別を示しているか。
++- 資料中の事実と指示を区別しているか。
++- 不足する事実を作らないよう指示しているか。
++- 技術的な記述の保持を指示しているか。
++- 期待する出力形式を定めているか。
+diff --git a/skills/technical-writing/references/review-rubric.md b/skills/technical-writing/references/review-rubric.md
+index d0025b6..1562c28 100644
+--- a/skills/technical-writing/references/review-rubric.md
++++ b/skills/technical-writing/references/review-rubric.md
+@@ -1,75 +1,75 @@
+-# Review Rubric
++# レビューの評価基準
+ 
+-Use this reference when the user asks for a review, critique, or quality pass.
++レビュー、批評、品質確認を求められた場合に参照する。
+ 
+-## Severity Labels
++## 重大度
+ 
+-- **Blocker**: The draft could mislead readers, cause implementation failure, omit required safety/context, or contradict product behavior.
+-- **Major**: The draft is usable but has structural, completeness, or clarity problems that will slow readers down.
+-- **Minor**: The draft is mostly sound but has local clarity, consistency, or style issues.
+-- **Nit**: Small wording, formatting, or polish issue.
++- Blocker（公開を妨げる問題）：読者を誤解させる、実装を失敗させる、必要な安全情報や文脈が欠ける、製品の動作に矛盾する可能性がある。
++- Major（大きな問題）：草稿は利用できるが、構成、情報の充足、明確さに問題があり、読者の作業を遅らせる。
++- Minor（小さな問題）：草稿はおおむね適切だが、局所的な明確さ、一貫性、表現に問題がある。
++- Nit（軽微な指摘）：語句、書式、仕上げに関する小さな問題。
+ 
+-## Review Order
++## レビューの順序
+ 
+-1. Reader and goal fit
+-2. Document type and structure
+-3. Technical completeness and factual safety
+-4. Examples, code, and verification
+-5. Sentence-level clarity
+-6. Terminology and consistency
++1. 読者と目的への適合。
++2. 文書の種類と構成。
++3. 技術情報の充足と事実の正確さ。
++4. 例、コード、確認方法。
++5. 文単位の明確さ。
++6. 用語と一貫性。
+ 
+-## Checklist
++## 確認項目
+ 
+-### Reader And Goal
++### 読者と目的
+ 
+-- Is the intended reader clear?
+-- Does the opening explain what the reader gains?
+-- Are prerequisites and assumptions explicit?
++- 想定読者は明確か。
++- 冒頭で、読者が得られるものを説明しているか。
++- 前提条件と仮定は明示されているか。
+ 
+-### Structure
++### 構成
+ 
+-- Does the page serve one primary goal?
+-- Is the section order predictable for the document type?
+-- Are headings keyword-rich and consistent?
+-- Is background placed after the reader understands the value?
++- ページは主となる1つの目的に役立っているか。
++- 節の順序は、その種類の文書として予測しやすいか。
++- 見出しに必要なキーワードがあり、書き方がそろっているか。
++- 読者が価値を理解した後に、背景を説明しているか。
+ 
+-### Technical Completeness
++### 技術情報の充足
+ 
+-- Are important versions, environments, and constraints included?
+-- Are warnings and failure modes visible before risky steps?
+-- Are claims backed by examples, behavior, or evidence?
+-- Are TODOs or unknowns clearly marked instead of guessed?
++- 重要なバージョン、環境、制約を含むか。
++- 危険を伴う手順の前に、警告と失敗時の動作を確認できるか。
++- 主張は、例、動作、根拠によって裏付けられているか。
++- TODOや不明点は、推測で埋めずに明示しているか。
+ 
+-### Examples And Verification
++### 例と確認方法
+ 
+-- Are code samples runnable or clearly illustrative?
+-- Does each workflow include an expected result?
+-- Are edge cases or common errors covered where they affect implementation?
++- コード例は実行できるか。説明用であれば、その旨を明示しているか。
++- 各作業手順に期待する結果があるか。
++- 実装に影響する例外的な場合や、よくあるエラーを扱っているか。
+ 
+-### Sentence Quality
++### 文の品質
+ 
+-- Are actors and actions clear?
+-- Are sentences compact without losing required context?
+-- Are vague nouns replaced with concrete verbs, values, or states?
+-- Is terminology consistent?
++- 動作する主体と動作は明確か。
++- 必要な文脈を失わずに簡潔にしているか。
++- 曖昧な名詞を、具体的な動詞、値、状態で表しているか。
++- 用語は一貫しているか。
+ 
+-## Output Format
++## 出力形式
+ 
+-When reviewing, lead with findings:
++レビューでは指摘事項を先に示す。
+ 
+ ```markdown
+-## Findings
++## 指摘事項
+ 
+-- **Major** - Section "Configure webhooks": The draft says to retry failed events but does not define which status values are safe to retry. Add the exact retryable statuses and one non-retryable example.
+-- **Minor** - Section "Overview": The opening explains internal architecture before the reader outcome. Move the outcome sentence first.
++- Major — 「Webhookの設定」節：失敗したイベントを再試行するように書かれていますが、安全に再試行できるステータスが定義されていません。再試行できるステータスを正確に列挙し、再試行できない例も1つ示してください。
++- Minor — 「概要」節：読者が得られる結果より先に内部構成を説明しています。結果を説明する文を先に置いてください。
+ 
+-## Summary
++## 要約
+ 
+-The draft has the right document type, but it needs clearer prerequisites and verification steps before publication.
++草稿の文書種別は適切ですが、公開前に前提条件と確認手順を明確にする必要があります。
+ 
+-## Suggested Rewrite
++## 書き換え案
+ 
+-[Include only if the user asked for a rewrite or the fix is small enough to show directly.]
++[利用者が書き換えを求めた場合、または小さな修正をその場で示せる場合に限り記載する。]
+ ```
+ 
+-Keep reviews specific. Avoid generic praise or style opinions that do not change the document.
++レビューは具体的にする。文書の改善につながらない一般的な称賛や、表現の好みに関する意見を避ける。
+diff --git a/skills/technical-writing/references/sentence-style.md b/skills/technical-writing/references/sentence-style.md
+index c1f5e1f..0513956 100644
+--- a/skills/technical-writing/references/sentence-style.md
++++ b/skills/technical-writing/references/sentence-style.md
+@@ -1,104 +1,104 @@
+-# Sentence Style
++# 文の書き方
+ 
+-Use this reference when polishing prose. Preserve meaning first; style changes are only useful when they make the technical content easier to understand.
++文章を推敲するときに参照する。意味の保持を優先する。表現の調整は、技術的な内容を理解しやすくする場合に役立つ。
+ 
+-## Clear Subject
++## 主語を明確にする
+ 
+-Make the actor clear.
++誰が動作するかを明確にする。
+ 
+-Prefer:
++望ましい例：
+ 
+-- "The client sends a request."
+-- "The server returns a token."
+-- "You can retry the job after the status changes to `failed`."
++- 「クライアントはリクエストを送信します。」
++- 「サーバーはトークンを返します。」
++- 「ステータスが `failed` になったら、ジョブを再試行できます。」
+ 
+-Avoid vague subjects:
++曖昧な主語を避ける：
+ 
+-- "It is processed."
+-- "This is handled automatically."
+-- "The process is performed."
++- 「処理されます。」
++- 「これは自動的に対応されます。」
++- 「処理が実行されます。」
+ 
+-For Korean drafts, avoid forcing tools or systems into unnatural subject positions when a user or developer action is clearer.
++韓国語の草稿では、利用者や開発者の動作として書くほうが明確な場合に、ツールやシステムを無理に主語に置かない。
+ 
+-## Active Voice
++## 能動態
+ 
+-Use active voice when it clarifies responsibility.
++責任の所在が明確になる場合は、能動態を使う。
+ 
+-Prefer:
++望ましい例：
+ 
+-- "The SDK validates the signature."
+-- "Call `confirmPayment` after the customer approves the payment."
++- 「SDKは署名を検証します。」
++- 「顧客が支払いを承認したら、`confirmPayment` を呼び出してください。」
+ 
+-Use passive voice only when the actor is unknown, irrelevant, or intentionally hidden.
++動作する主体が不明、無関係、または意図的に伏せられている場合に限り、受動態を使う。
+ 
+-## Compactness
++## 簡潔さ
+ 
+-Keep the useful information and remove meta-discourse.
++有用な情報を残し、文章自体についての前置きや説明を取り除く。
+ 
+-Remove or rewrite:
++削除または書き換える表現：
+ 
+-- "In this document, we will explain..."
+-- "It is important to note that..."
+-- "As mentioned above..."
+-- repeated setup phrases that do not add constraints.
++- 「この文書では、〜を説明します。」
++- 「留意すべき重要な点は〜です。」
++- 「前述のとおり〜。」
++- 制約を補わない、繰り返しの導入表現。
+ 
+-Do not remove warnings, assumptions, prerequisites, or edge cases just to make the page shorter.
++ページを短くするために、警告、仮定、前提条件、例外的な場合を削除しない。
+ 
+-## Concreteness
++## 具体性
+ 
+-Make actions, conditions, and results observable.
++動作、条件、結果を観察できる形で書く。
+ 
+-Prefer:
++優先する情報：
+ 
+-- exact commands,
+-- concrete inputs and outputs,
+-- environment or version constraints,
+-- expected UI or API state,
+-- measurable thresholds when they matter.
++- 正確なコマンド。
++- 具体的な入力と出力。
++- 環境やバージョンの制約。
++- 期待するUIやAPIの状態。
++- 必要な場合には、測定できるしきい値。
+ 
+-Replace vague wording:
++曖昧な表現を置き換える：
+ 
+-- "quickly" -> actual expected time if known,
+-- "properly" -> the condition that proves it works,
+-- "some settings" -> the specific settings.
++- 「すぐに」→分かっている場合は、実際に想定する所要時間。
++- 「適切に」→動作を確認できる条件。
++- 「いくつかの設定」→具体的な設定項目。
+ 
+-## Natural Expression
++## 自然な表現
+ 
+-Choose plain language over heavy nouns and literal translation patterns.
++名詞を重ねた重い表現や逐語訳調より、平易な言葉を選ぶ。
+ 
+-For English:
++英語の場合：
+ 
+-- Prefer direct verbs over noun stacks.
+-- Avoid inflated phrases such as "utilize" when "use" is enough.
+-- Keep sentence rhythm varied, but do not become editorial if the document is operational.
++- 名詞を連ねるより、動作を直接示す動詞を使う。
++- 単に「使う」で十分な場合に、「活用する」のような大げさな表現を避ける。
++- 文の長さや調子に変化を持たせる。ただし、運用文書では論評調にしない。
+ 
+-For Korean:
++韓国語の場合：
+ 
+-- Remove unnecessary Sino-Korean nouns when a natural verb phrase is clearer.
+-- Rewrite literal translation patterns into idiomatic Korean.
+-- Preserve formal register when the source requires it; naturalness is not casualness.
++- 自然な動詞句のほうが明確な場合は、不要な漢字語の名詞を取り除く。
++- 逐語訳調を自然な韓国語に書き換える。
++- 原文が改まった文体を必要とする場合は、その文体を保持する。自然さはくだけた表現を意味しない。
+ 
+-## Terminology Consistency
++## 用語の一貫性
+ 
+-Use one term for one concept.
++1つの概念には1つの用語を使う。
+ 
+-Check:
++確認する事項：
+ 
+-- Follow official product, API, and framework names.
+-- Expand an acronym on first use unless the audience certainly knows it.
+-- Do not alternate between synonyms for the same technical concept.
+-- Keep foreign word transliteration consistent in Korean drafts.
++- 製品、API、フレームワークの正式名称に従う。
++- 読者が確実に知っている場合を除き、略語は初出時に正式名称を示す。
++- 同じ技術的概念を複数の類義語で呼ばない。
++- 韓国語の草稿では、外来語の表記を統一する。
+ 
+-## Code And Identifier Safety
++## コードと識別子の保持
+ 
+-Never polish inside code blocks unless the user asks.
++依頼がない限り、コードブロックの内部を推敲しない。
+ 
+-Preserve:
++保持するもの：
+ 
+-- command names and flags,
+-- API identifiers and parameters,
+-- config keys,
+-- exact error messages,
+-- version numbers,
+-- URLs,
+-- quoted legal, security, or compliance text.
++- コマンド名とフラグ。
++- API識別子とパラメーター。
++- 設定キー。
++- 正確なエラーメッセージ。
++- バージョン番号。
++- URL。
++- 引用された法務、セキュリティ、コンプライアンスに関する文章。
+diff --git a/skills/technical-writing/references/source-map.md b/skills/technical-writing/references/source-map.md
+index e0e2c3f..d5153ec 100644
+--- a/skills/technical-writing/references/source-map.md
++++ b/skills/technical-writing/references/source-map.md
+@@ -1,33 +1,33 @@
+-# Source Map
++# 出典との対応
+ 
+-This skill adapts guidance from Toss's `technical-writing` repository:
++このスキルは、Tossの `technical-writing` リポジトリの指針を翻案している。
+ 
+ https://github.com/toss/technical-writing
+ 
+-The source repository is licensed under CC BY-NC-SA 4.0. This project keeps Toss-derived writing guidance under the same content license and provides attribution in `NOTICE.md`.
++参照元のリポジトリは、CC BY-NC-SA 4.0で提供されている。このプロジェクトでは、Tossに由来する執筆指針を同じコンテンツライセンスで提供し、`NOTICE.md` に帰属を記載している。
+ 
+-## Adaptation Map
++## 対応表
+ 
+-| This repository | Toss source area | Adapted guidance |
++| このリポジトリ | Tossの参照箇所 | 翻案した指針 |
+ | --- | --- | --- |
+-| `references/document-types.md` | `docs/type/*`, `docs/tutorial/*` | Learning, problem-solving, reference, explanation, and article-like document selection |
+-| `references/structure-principles.md` | `docs/architecture/*` | One topic per page, value first, headings, overview, predictability, and background |
+-| `references/sentence-style.md` | `docs/sentence/*` | Clear subject, compactness, concreteness, natural Korean expression, and terminology consistency |
+-| `references/review-rubric.md` | `docs/tutorial/review-prompt.mdx` plus checklist pages | Checklist-based review flow and severity labels |
+-| `references/prompt-workflows.md` | `docs/tutorial/review-prompt.mdx` | AI-assisted drafting, structuring, and review prompts |
+-| `assets/templates/*` | `docs/type/index.md`, `docs/tutorial/structure.mdx` | Reusable document skeletons |
+-
+-## Adaptation Rules
+-
+-- Do not copy Toss pages as full verbatim mirrors.
+-- Translate and condense guidance into agent instructions.
+-- Preserve attribution and the CC BY-NC-SA 4.0 license for content.
+-- Keep scripts and tests separate under MIT.
+-
+-## Source URLs
+-
+-- Repository: https://github.com/toss/technical-writing
+-- Architecture docs: https://github.com/toss/technical-writing/tree/master/docs/architecture
+-- Sentence docs: https://github.com/toss/technical-writing/tree/master/docs/sentence
+-- Type docs: https://github.com/toss/technical-writing/tree/master/docs/type
+-- Tutorial docs: https://github.com/toss/technical-writing/tree/master/docs/tutorial
++| `references/document-types.md` | `docs/type/*`、`docs/tutorial/*` | 学習、問題解決、リファレンス、解説、記事形式の文書の選択 |
++| `references/structure-principles.md` | `docs/architecture/*` | 1ページ1話題、価値を先に示すこと、見出し、概要、予測しやすさ、背景 |
++| `references/sentence-style.md` | `docs/sentence/*` | 明確な主語、簡潔さ、具体性、自然な韓国語、用語の一貫性 |
++| `references/review-rubric.md` | `docs/tutorial/review-prompt.mdx` と確認項目のページ | 確認項目に沿ったレビュー手順と重大度 |
++| `references/prompt-workflows.md` | `docs/tutorial/review-prompt.mdx` | AIを使った執筆、構成、レビューのプロンプト |
++| `assets/templates/*` | `docs/type/index.md`、`docs/tutorial/structure.mdx` | 再利用できる文書のひな形 |
++
++## 翻案時の指定
++
++- Tossのページ全文をそのまま複製しない。
++- 指針を翻訳し、エージェント向けの指示にまとめる。
++- 帰属表示と、コンテンツに適用されるCC BY-NC-SA 4.0を保持する。
++- スクリプトとテストは分離し、MITで提供する。
++
++## 参照URL
++
++- リポジトリ：https://github.com/toss/technical-writing
++- 構成に関する文書：https://github.com/toss/technical-writing/tree/master/docs/architecture
++- 文に関する文書：https://github.com/toss/technical-writing/tree/master/docs/sentence
++- 文書種別に関する文書：https://github.com/toss/technical-writing/tree/master/docs/type
++- チュートリアルに関する文書：https://github.com/toss/technical-writing/tree/master/docs/tutorial
+diff --git a/skills/technical-writing/references/structure-principles.md b/skills/technical-writing/references/structure-principles.md
+index 0164a1b..120b654 100644
+--- a/skills/technical-writing/references/structure-principles.md
++++ b/skills/technical-writing/references/structure-principles.md
+@@ -1,87 +1,87 @@
+-# Structure Principles
++# 文書構成の原則
+ 
+-Use this reference when planning, reorganizing, or reviewing information architecture.
++情報構成を計画、再編、レビューするときに参照する。
+ 
+-## One Topic Per Page
++## 1ページに1つの話題
+ 
+-Give each page one clear job.
++各ページに、明確な役割を1つ持たせる。
+ 
+-Check:
++確認する事項：
+ 
+-- If the outline needs `H4` or deeper headings, split the page or simplify the hierarchy.
+-- If two reader goals appear in the same page, separate them or create an overview page that links to each topic.
+-- Keep overview pages broad and topic pages specific.
++- 章立てに `H4` 以降の深い見出しが必要なら、ページを分けるか階層を簡単にする。
++- 1ページに読者の目的が2つある場合は、分けるか、各話題へリンクする概要ページを作る。
++- 概要ページは広い範囲を扱い、個別の話題のページは対象を絞る。
+ 
+-Good page titles describe one task or concept, not a whole product area.
++よいページタイトルは、製品の領域全体ではなく、1つの作業や概念を表す。
+ 
+-## Value First, Cost Later
++## 価値を先に、負担を後に
+ 
+-Lead with the reader's outcome before implementation details.
++実装の詳細より先に、読者が得られる結果を示す。
+ 
+-Check:
++確認する事項：
+ 
+-- The first section should answer "what can I do after reading this?"
+-- Move background, internal architecture, and optional details after the initial value.
+-- Replace feature-centered openings with reader-centered outcomes.
++- 最初の節で「読んだ後に何ができるか」に答える。
++- 背景、内部構成、任意の詳細は、最初に価値を示した後へ移す。
++- 機能を中心にした導入を、読者が得られる結果を中心にした導入へ書き換える。
+ 
+-Use this especially for tutorials, release notes, migration guides, and technical articles.
++特にチュートリアル、リリースノート、移行ガイド、技術記事で使う。
+ 
+-## Effective Headings
++## 効果的な見出し
+ 
+-Headings should help readers scan and search.
++見出しは、読者が内容を拾い読みし、検索する助けになるものにする。
+ 
+-Check:
++確認する事項：
+ 
+-- Include the core keyword in the heading.
+-- Keep heading style consistent across sibling sections.
+-- Prefer plain, declarative, action-oriented headings.
+-- Keep headings short enough to scan, but not so short that the meaning disappears.
++- 中心となるキーワードを含める。
++- 同じ階層の節で見出しの書き方をそろえる。
++- 平易で、内容や動作を直接示す見出しを優先する。
++- 拾い読みできる短さにする。ただし、意味が分からなくなるほど短くしない。
+ 
+-Avoid decorative or clever headings in documentation. Save personality for body prose where it does not hurt retrieval.
++文書では装飾的な見出しや凝った見出しを避ける。個性は、情報の探しやすさを損なわない範囲で本文に持たせる。
+ 
+-## Overview Before Detail
++## 詳細の前に概要
+ 
+-An overview should set expectations and help readers decide whether to continue.
++概要は、内容の見通しを示し、読み進めるか判断できるものにする。
+ 
+-Check:
++確認する事項：
+ 
+-- Summarize the document's core value.
+-- State the reader goal or problem.
+-- Mention important prerequisites, constraints, or supported environments.
+-- Do not start with deep background unless the background is the value.
++- 文書の中心的な価値を要約する。
++- 読者の目的や問題を述べる。
++- 重要な前提条件、制約、対応環境を示す。
++- 背景そのものに価値がある場合を除き、詳しい背景説明から始めない。
+ 
+-## Predictable Order
++## 予測しやすい順序
+ 
+-Readers should be able to guess where information lives.
++読者が、情報のある場所を予測できるようにする。
+ 
+-Common orders:
++よく使う順序：
+ 
+-- Tutorial: goal -> prerequisites -> steps -> verify -> next steps
+-- Problem-solving: symptom -> cause/context -> fix -> verify -> fallback
+-- Reference: overview -> signature/schema -> options -> examples -> errors
+-- Explanation: concept -> context -> mechanism -> tradeoffs -> examples
+-- Article: problem -> stakes -> approach -> evidence -> lesson
++- チュートリアル：目標→前提条件→手順→確認→次の作業。
++- 問題解決：症状→原因・背景→対処→確認→うまくいかない場合の対応。
++- リファレンス：概要→シグネチャ・スキーマ→選択肢→例→エラー。
++- 解説：概念→背景→仕組み→利点と欠点→例。
++- 記事：問題→影響の大きさ→取り組み方→根拠→学び。
+ 
+-Use matching section patterns across related pages.
++関連するページでは、対応する節の構成をそろえる。
+ 
+-## Sufficient Background
++## 十分な背景説明
+ 
+-Explain new concepts when they first appear.
++新しい概念は、初めて登場したときに説明する。
+ 
+-Check:
++確認する事項：
+ 
+-- Define unfamiliar terms before relying on them.
+-- Explain how a feature behaves, not only how to call it.
+-- Add context around references, links, screenshots, and diagrams.
+-- Prefer a short explanation near the point of use over a detached glossary entry.
++- 不慣れな用語は、それを前提に説明する前に定義する。
++- 機能の呼び出し方だけでなく、どのように動くかを説明する。
++- 参照、リンク、画面画像、図の前後に説明を添える。
++- 離れた用語集の項目より、その場の短い説明を優先する。
+ 
+-## Cross-Linking
++## 関連文書へのリンク
+ 
+-Use links to reduce page overload.
++リンクを使い、1ページへの情報の詰め込みを抑える。
+ 
+-Check:
++確認する事項：
+ 
+-- Link from overview pages to focused topic pages.
+-- Link from tutorials to references after the guided path.
+-- Link from problem-solving docs to deeper explanations only after the fix.
+-- Do not make links carry required context that should be in the current page.
++- 概要ページから、話題を絞ったページへリンクする。
++- チュートリアルでは、案内する手順の後にリファレンスへのリンクを置く。
++- 問題解決文書では、対処方法の後に詳しい解説へのリンクを置く。
++- 現在のページに必要な文脈を、リンク先だけに任せない。
