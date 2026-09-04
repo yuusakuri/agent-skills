@@ -1,4 +1,0 @@
-interface:
-  display_name: "技術文書の執筆"
-  short_description: "開発者向け文書の執筆とレビュー"
-  default_prompt: "$technical-writingを使い、この開発者向けガイドの構成、明確さ、文単位の品質をレビューしてください。"

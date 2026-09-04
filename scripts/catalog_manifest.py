@@ -24,9 +24,6 @@ SOURCE_KEYS = {
     "activation",
     "aliases",
     "skills",
-    "host",
-    "patch_file",
-    "adaptation",
 }
 SKILL_KEYS = {"name", "path", "capability", "activation", "resources"}
 ALIAS_KEYS = {"from", "to"}
@@ -63,9 +60,6 @@ class Source:
     activation: str
     aliases: tuple[Alias, ...]
     skills: tuple[Skill, ...]
-    host: str = "github.com"
-    patch_file: PurePosixPath | None = None
-    adaptation: str | None = None
 
 
 @dataclass(frozen=True)
@@ -215,19 +209,6 @@ def _parse_source(raw_source: Any) -> Source:
     revision: str | None = None
     license_file: PurePosixPath | None = None
     notice_file: PurePosixPath | None = None
-    host = raw_source.get("host", "github.com")
-    patch_file: PurePosixPath | None = None
-    adaptation: str | None = None
-    if not isinstance(host, str) or host not in {"github.com", "gist.github.com"}:
-        raise CatalogError(f"unsupported source host: {source_id}: {host}")
-    if "patch_file" in raw_source:
-        patch_file = _relative_path(
-            _required_string(raw_source, "patch_file", f"source {source_id}"),
-            f"source {source_id} patch_file",
-        )
-        adaptation = _required_string(raw_source, "adaptation", f"source {source_id}")
-    elif "adaptation" in raw_source:
-        raise CatalogError(f"adaptation requires patch_file: {source_id}")
 
     if kind == "vendored":
         if not REPOSITORY_PATTERN.fullmatch(repository):
@@ -257,8 +238,6 @@ def _parse_source(raw_source: Any) -> Source:
                 notice_value, f"source {source_id} notice_file"
             )
     else:
-        if "host" in raw_source or patch_file is not None:
-            raise CatalogError(f"local source cannot declare host or patch_file: {source_id}")
         if repository != ".":
             raise CatalogError(f"local repository must be '.': {source_id}")
         if revision_value is not None:
@@ -286,9 +265,6 @@ def _parse_source(raw_source: Any) -> Source:
         activation,
         aliases,
         skills,
-        host,
-        patch_file,
-        adaptation,
     )
 
 

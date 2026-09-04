@@ -40,9 +40,7 @@ jobs:
         run: bash tests/validate_test.sh
 
       - name: Run snapshot updater tests
-        run: |
-          bash tests/update_catalog_test.sh
-          bash tests/source_patch_test.sh
+        run: bash tests/update_catalog_test.sh
 
       - name: Check catalog policy
         run: bash tests/catalog_test.sh
