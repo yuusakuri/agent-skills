@@ -76,6 +76,10 @@ submodule の commit は各プロジェクトが個別に保持するため、�
 
 ## 文書作成
 
+[tech-writing.md](tech-writing.md) は、文章構成、技術文書の執筆、日本語の
+推敲を扱う日本語の文書です。3つの執筆指針と、その参照内容・テンプレートを
+1ファイルに収めています。このファイルを直接編集して利用できます。
+
 `document-architecture` は、次の正式文書を共同執筆・再構成・品質確認する
 ための Skill です。
 
@@ -119,3 +123,18 @@ for test_file in tests/*.sh; do bash "${test_file}"; done
 このリポジトリ独自のコードと文書は [MIT License](LICENSE) です。外部
 Skill の取得元、固定 commit、ライセンス本文は
 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) にまとめています。
+
+`tech-writing.md` の日本語訳・統合部分は
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) で提供します。
+非営利・表示・継承条件があり、上記のMIT Licenseの適用対象には含みません。
+原文に対して、日本語訳、英文法・英語固有の語法の除外、ファイルの統合、
+見出しと参照先の調整を行っています。
+
+| 提供元 | 固定した原文 | 原文のライセンス |
+|---|---|---|
+| William Strunk Jr.／Jesse Vincent（obra） | [writing-clearly-and-concisely](https://github.com/obra/the-elements-of-style/tree/05fc4f0d2b97b7c042dd9949ad658568e4a1324e/skills/writing-clearly-and-concisely) | Public Domain（提供元表記） |
+| k16shikano | [japanese-tech-writing](https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d/c7189cdc9c2520be50418209834145bdf3a46e97) | [Unlicenseの適用表明](https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063/1092e6b60296c760071c308624e344469ec345cf) |
+
+構成は [epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai)
+を参考にしています。Strunkの原著は1918年の
+[The Elements of Style](https://www.gutenberg.org/files/37134/37134-h/37134-h.htm) です。
