@@ -133,7 +133,6 @@ Skill の取得元、固定 commit、ライセンス本文は
 | 提供元 | 固定した原文 | 原文のライセンス |
 |---|---|---|
 | William Strunk Jr.／Jesse Vincent（obra） | [writing-clearly-and-concisely](https://github.com/obra/the-elements-of-style/tree/05fc4f0d2b97b7c042dd9949ad658568e4a1324e/skills/writing-clearly-and-concisely) | Public Domain（提供元表記） |
-| gwagjiug／technical-writing contributors | [technical-writing](https://github.com/gwagjiug/technical-writing/tree/5d8ef7a8de5435cc5a03367678b86fc9dd2a078f/skills/technical-writing) | CC BY-NC-SA 4.0 |
 | k16shikano | [japanese-tech-writing](https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d/c7189cdc9c2520be50418209834145bdf3a46e97) | [Unlicenseの適用表明](https://gist.github.com/k16shikano/67625f2a7d96e3bbdfae8d571a936063/1092e6b60296c760071c308624e344469ec345cf) |
 
 gwagjiug版は、[Tossのtechnical-writing](https://github.com/toss/technical-writing)
