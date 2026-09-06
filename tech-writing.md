@@ -1146,6 +1146,4 @@ LLM が大量生成する、中身のない型に誘惑されない。書き上�
 | --- | --- | --- |
 | 明確で簡潔な文章を書く | [obra/the-elements-of-style の writing-clearly-and-concisely](https://github.com/obra/the-elements-of-style/tree/05fc4f0d2b97b7c042dd9949ad658568e4a1324e/skills/writing-clearly-and-concisely) | 明確さ、簡潔さ、段落構成、具体性に関する指針。 |
 | 明確で簡潔な文章を書く | [The Elements of Style](https://www.gutenberg.org/files/37134/37134-h/37134-h.htm) | Strunkによる文章構成と文体の原著。 |
-| 技術文書の執筆 | [gwagjiug/technical-writing](https://github.com/gwagjiug/technical-writing/tree/5d8ef7a8de5435cc5a03367678b86fc9dd2a078f/skills/technical-writing) | 技術文書の種類、構成、レビュー、テンプレートの指針。 |
-| 技術文書の執筆 | [Toss/technical-writing](https://github.com/toss/technical-writing) | 技術文書の構成、文、文書種別に関する原資料。 |
 | 日本語技術文書の文章規範 | [k16shikano の japanese-tech-writing](https://gist.github.com/k16shikano/fd287c3133457c4fd8f5601d34aa817d/c7189cdc9c2520be50418209834145bdf3a46e97) | 日本語の段落構成、論証、読み手の負荷、表現に関する指針。 |
