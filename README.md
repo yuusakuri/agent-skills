@@ -92,6 +92,15 @@ submodule の commit は各プロジェクトが個別に保持するため、�
 います。成果物は GitHub-Flavored Markdown を既定とし、Word は利用者が
 明示した場合だけ作成します。
 
+## Webページの取得
+
+`scrapling-official` は、通常のURL取得がアクセス拒否やボット対策で失敗した
+場合や、JavaScriptで表示される本文を取得する場合に使います。HTTP通信と
+ブラウザーによる取得を扱い、操作方法と参照資料を同梱しています。
+
+実行にはPython 3.10以降とScraplingが必要です。初回の環境構築は
+`skills/scrapling-official/SKILL.md` に従います。
+
 ## カタログの更新
 
 更新作業には Python 3.11 以降と Git が必要です。

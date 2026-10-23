@@ -40,6 +40,11 @@ for skill_name in external-one external-two; do
     'description: External test fixture skill.' \
     'metadata:' \
     '  frameworks: [test, fixture]' \
+    '  runtime:' \
+    '    homepage: "https://example.invalid/"' \
+    '    requires:' \
+    '      bins:' \
+    '        - python3' \
     '  updated: 2026-01-01' \
     '---' \
     "# ${skill_name}" \
@@ -82,6 +87,9 @@ aliases = [
 skills = [
   { name = "external-one", path = "skills/external-one", capability = "external-one-capability", resources = ["references/definition-of-done.md"] },
   { name = "external-two", path = "skills/external-two", capability = "external-two-capability" },
+]
+replacements = [
+  { skill = "external-one", file = "SKILL.md", from = "# external-one", to = "# External One" },
 ]
 
 [[sources]]
@@ -140,6 +148,7 @@ grep -Fq 'shared completion criteria' \
   "${TARGET_ROOT}/external-one/references/definition-of-done.md"
 grep -Fq 'Use `local-skill` for the next step.' \
   "${TARGET_ROOT}/external-one/SKILL.md"
+grep -Fq '# External One' "${TARGET_ROOT}/external-one/SKILL.md"
 if grep -Fq 'retired-skill' "${TARGET_ROOT}/external-one/SKILL.md"; then
   printf 'not ok - excluded upstream skill reference was not normalized\n' >&2
   exit 1
@@ -150,6 +159,25 @@ grep -Fq 'frameworks: "test, fixture"' \
   "${TARGET_ROOT}/external-two/SKILL.md"
 grep -Fq 'updated: "2026-01-01"' \
   "${TARGET_ROOT}/external-two/SKILL.md"
+"${PYTHON_BIN}" - "${REPOSITORY_ROOT}/scripts" "${TARGET_ROOT}/external-two/SKILL.md" <<'PY'
+import json
+from pathlib import Path
+import sys
+
+sys.path.insert(0, sys.argv[1])
+from validate import frontmatter
+
+skill_file = Path(sys.argv[2])
+frontmatter(skill_file)
+runtime_line = next(line for line in skill_file.read_text().splitlines() if line.startswith("  runtime:"))
+assert json.loads(runtime_line.split(":", 1)[1]) == (
+    'homepage: "https://example.invalid/"\n'
+    'requires:\n'
+    '  bins:\n'
+    '    - python3'
+)
+assert skill_file.read_text().endswith("# external-two\n")
+PY
 printf 'ok - installs self-contained external and local skills\n'
 test "$(grep -Fc 'https://github.com/example/source' "${CATALOG_ROOT}/THIRD_PARTY_NOTICES.md")" = "1"
 grep -Fq "${SOURCE_REVISION}" "${CATALOG_ROOT}/THIRD_PARTY_NOTICES.md"
