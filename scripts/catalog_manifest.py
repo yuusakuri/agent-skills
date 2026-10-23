@@ -23,10 +23,12 @@ SOURCE_KEYS = {
     "notice_file",
     "activation",
     "aliases",
+    "replacements",
     "skills",
 }
 SKILL_KEYS = {"name", "path", "capability", "activation", "resources"}
 ALIAS_KEYS = {"from", "to"}
+REPLACEMENT_KEYS = {"skill", "file", "from", "to"}
 
 
 class CatalogError(ValueError):
@@ -49,6 +51,14 @@ class Alias:
 
 
 @dataclass(frozen=True)
+class TextReplacement:
+    skill: str
+    file: PurePosixPath
+    source: str
+    target: str
+
+
+@dataclass(frozen=True)
 class Source:
     id: str
     kind: str
@@ -59,6 +69,7 @@ class Source:
     notice_file: PurePosixPath | None
     activation: str
     aliases: tuple[Alias, ...]
+    replacements: tuple[TextReplacement, ...]
     skills: tuple[Skill, ...]
 
 
@@ -169,6 +180,26 @@ def _parse_alias(raw_alias: Any, source_id: str) -> Alias:
     return Alias(source, target)
 
 
+def _parse_replacement(raw_replacement: Any, source_id: str) -> TextReplacement:
+    context = f"source {source_id} replacement"
+    if not isinstance(raw_replacement, dict):
+        raise CatalogError(f"{context} must be a table")
+    unexpected = set(raw_replacement) - REPLACEMENT_KEYS
+    if unexpected:
+        raise CatalogError(
+            f"{context} has unsupported keys: {', '.join(sorted(unexpected))}"
+        )
+    skill = _required_string(raw_replacement, "skill", context)
+    file = _relative_path(
+        _required_string(raw_replacement, "file", context), f"{context} file"
+    )
+    source = _required_string(raw_replacement, "from", context)
+    target = raw_replacement.get("to")
+    if not isinstance(target, str):
+        raise CatalogError(f"{context} to must be a string")
+    return TextReplacement(skill, file, source, target)
+
+
 def _parse_source(raw_source: Any) -> Source:
     if not isinstance(raw_source, dict):
         raise CatalogError("each source must be a table")
@@ -202,6 +233,13 @@ def _parse_source(raw_source: Any) -> Source:
     alias_sources = [alias.source for alias in aliases]
     if len(alias_sources) != len(set(alias_sources)):
         raise CatalogError(f"source {source_id} has duplicate aliases")
+    raw_replacements = raw_source.get("replacements", [])
+    if not isinstance(raw_replacements, list):
+        raise CatalogError(f"source {source_id} replacements must be an array")
+    replacements = tuple(
+        _parse_replacement(replacement, source_id)
+        for replacement in raw_replacements
+    )
 
     revision_value = raw_source.get("revision")
     license_value = raw_source.get("license_file")
@@ -264,6 +302,7 @@ def _parse_source(raw_source: Any) -> Source:
         notice_file,
         activation,
         aliases,
+        replacements,
         skills,
     )
 
@@ -327,6 +366,13 @@ def load_catalog(
                     )
 
     for source in sources:
+        skill_names = {skill.name for skill in source.skills}
+        for replacement in source.replacements:
+            if replacement.skill not in skill_names:
+                raise CatalogError(
+                    f"replacement skill is not declared by source {source.id}: "
+                    f"{replacement.skill}"
+                )
         for alias in source.aliases:
             if alias.target not in names:
                 raise CatalogError(

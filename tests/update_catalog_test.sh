@@ -88,6 +88,9 @@ skills = [
   { name = "external-one", path = "skills/external-one", capability = "external-one-capability", resources = ["references/definition-of-done.md"] },
   { name = "external-two", path = "skills/external-two", capability = "external-two-capability" },
 ]
+replacements = [
+  { skill = "external-one", file = "SKILL.md", from = "# external-one", to = "# External One" },
+]
 
 [[sources]]
 id = "catalog"
@@ -145,6 +148,7 @@ grep -Fq 'shared completion criteria' \
   "${TARGET_ROOT}/external-one/references/definition-of-done.md"
 grep -Fq 'Use `local-skill` for the next step.' \
   "${TARGET_ROOT}/external-one/SKILL.md"
+grep -Fq '# External One' "${TARGET_ROOT}/external-one/SKILL.md"
 if grep -Fq 'retired-skill' "${TARGET_ROOT}/external-one/SKILL.md"; then
   printf 'not ok - excluded upstream skill reference was not normalized\n' >&2
   exit 1

@@ -19,6 +19,7 @@ import tomllib
 from catalog_manifest import (
     Alias,
     CatalogError,
+    TextReplacement,
     Source,
     declared_skill_name,
     load_catalog,
@@ -176,9 +177,38 @@ def copy_source_skills(
                 )
             destination_resource.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(source_resource, destination_resource)
-        normalize_frontmatter_metadata(destination / "SKILL.md")
         destinations.append(destination)
+    apply_text_replacements(destinations, source.replacements, source.id)
+    for destination in destinations:
+        normalize_frontmatter_metadata(destination / "SKILL.md")
     apply_aliases(destinations, source.aliases, source.id)
+
+
+def apply_text_replacements(
+    skill_dirs: list[Path],
+    replacements: tuple[TextReplacement, ...],
+    source_id: str,
+) -> None:
+    skills_by_name = {skill_dir.name: skill_dir for skill_dir in skill_dirs}
+    for replacement in replacements:
+        target = skills_by_name[replacement.skill].joinpath(*replacement.file.parts)
+        assert_contained(target, skills_by_name[replacement.skill], "replacement file")
+        if not target.is_file():
+            raise CatalogError(
+                f"replacement file is missing for {source_id}: "
+                f"{replacement.skill}/{replacement.file}"
+            )
+        content = target.read_text(encoding="utf-8")
+        occurrences = content.count(replacement.source)
+        if occurrences != 1:
+            raise CatalogError(
+                f"replacement for {source_id} must match exactly once, "
+                f"got {occurrences}: {replacement.skill}/{replacement.file}"
+            )
+        target.write_text(
+            content.replace(replacement.source, replacement.target),
+            encoding="utf-8",
+        )
 
 
 def normalize_frontmatter_metadata(skill_file: Path) -> None:

@@ -14,7 +14,7 @@ from scrapling.fetchers import StealthySession
 
 all_quotes = []
 
-with StealthySession(headless=False) as session:
+with StealthySession(headless=False, solve_cloudflare=True) as session:
     for i in range(1, 11):
         page = session.fetch(f"https://quotes.toscrape.com/page/{i}/")
         quotes = page.css(".quote .text::text").getall()
