@@ -13,6 +13,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import textwrap
 import tomllib
 
 from catalog_manifest import (
@@ -194,17 +195,24 @@ def normalize_frontmatter_metadata(skill_file: Path) -> None:
         ) from error
 
     in_metadata = False
-    for index in range(1, closing):
+    normalized_lines = [lines[0]]
+    index = 1
+    while index < closing:
         line = lines[index]
+        index += 1
         if line == "metadata:":
             in_metadata = True
+            normalized_lines.append(line)
             continue
         if not in_metadata:
+            normalized_lines.append(line)
             continue
         if line and not line.startswith((" ", "\t")):
             in_metadata = False
+            normalized_lines.append(line)
             continue
         if not line.strip():
+            normalized_lines.append(line)
             continue
         if not line.startswith("  ") or line.startswith("    ") or ":" not in line:
             raise CatalogError(
@@ -213,10 +221,18 @@ def normalize_frontmatter_metadata(skill_file: Path) -> None:
         key, raw_value = line.strip().split(":", 1)
         value = raw_value.strip()
         if not value:
-            raise CatalogError(
-                f"metadata value must be a string: {skill_file}: {key}"
-            )
-        if value.startswith("[") and value.endswith("]"):
+            block_start = index
+            while index < closing and (
+                lines[index].startswith("    ") or not lines[index].strip()
+            ):
+                index += 1
+            # Preserve nested metadata as YAML text in a portable string value.
+            value = textwrap.dedent("\n".join(lines[block_start:index])).rstrip()
+            if not value:
+                raise CatalogError(
+                    f"metadata value must be a string: {skill_file}: {key}"
+                )
+        elif value.startswith("[") and value.endswith("]"):
             value = ", ".join(
                 item.strip().strip("\"'")
                 for item in value[1:-1].split(",")
@@ -224,9 +240,10 @@ def normalize_frontmatter_metadata(skill_file: Path) -> None:
             )
         else:
             value = value.strip("\"'")
-        lines[index] = f"  {key}: {json.dumps(value, ensure_ascii=False)}"
+        normalized_lines.append(f"  {key}: {json.dumps(value, ensure_ascii=False)}")
 
-    skill_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    normalized_lines.extend(lines[closing:])
+    skill_file.write_text("\n".join(normalized_lines) + "\n", encoding="utf-8")
 
 
 def apply_aliases(

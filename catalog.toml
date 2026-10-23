@@ -1,6 +1,18 @@
 version = 1
 
 [[sources]]
+id = "d4vinci-scrapling"
+kind = "vendored"
+repository = "D4Vinci/Scrapling"
+revision = "82180a1b3e1835888e4e90bee44963179f1e1ca0"
+license = "BSD-3-Clause"
+license_file = "agent-skill/Scrapling-Skill/LICENSE.txt"
+activation = "auto"
+skills = [
+  { name = "scrapling-official", path = "agent-skill/Scrapling-Skill", capability = "scrapling-web-extraction" },
+]
+
+[[sources]]
 id = "googlechrome-modern-web-guidance"
 kind = "vendored"
 repository = "GoogleChrome/modern-web-guidance"
