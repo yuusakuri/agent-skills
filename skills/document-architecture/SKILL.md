@@ -25,9 +25,9 @@ Always read `references/quality-checklist.md` before finalizing the document. Do
 ## Preserve artifact ownership
 
 - Use `deliver-prd` for a product requirements document covering the customer problem, value, product scope, and outcomes.
-- Use `brainstorming` when a technical approach is unresolved. Compare options first, then record the selected approach in the technical document.
-- Use `spec-driven-development` for a coding implementation specification.
-- Use `planning-and-task-breakdown` for file-level implementation tasks and verification steps.
+- Use `brainstorming` when a technical approach is unresolved or a coding change needs an approved design. Compare options first, then record the selected approach in the technical document.
+- Use `deliver-acceptance-criteria` for testable Given/When/Then criteria attached to a requirement.
+- Use `writing-plans` for file-level implementation tasks, their tests, and verification steps.
 - Use `documentation-and-adrs` for an architecture decision record explaining a costly-to-reverse decision.
 - Use `develop-solution-brief` for a short internal alignment document.
 - Use this skill for formal requirements, specifications, designs, and proposals after identifying their inputs and decision audience.
