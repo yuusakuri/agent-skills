@@ -325,7 +325,7 @@ SOFTWARE.
 ## obra/superpowers
 
 - Repository: https://github.com/obra/superpowers
-- Revision: `d884ae04edebef577e82ff7c4e143debd0bbec99`
+- Revision: `22f0b463e7a5e579904dd6211a520321035526f7`
 - License: `MIT`
 - Upstream license file: `LICENSE`
 

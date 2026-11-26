@@ -64,6 +64,40 @@ test "${claude_count}" = "${skill_count}" ||
   --catalog-root "${TEST_ROOT}/.agents/catalog" \
   --check
 
+PROFILE_ROOT="${TEST_ROOT}/engineering-project"
+mkdir -p "${PROFILE_ROOT}/.agents"
+ln -s "${CATALOG_ROOT}" "${PROFILE_ROOT}/.agents/catalog"
+"${PYTHON_BIN:-python3}" "${CATALOG_ROOT}/scripts/sync_agent_links.py" \
+  --project-root "${PROFILE_ROOT}" \
+  --catalog-root "${PROFILE_ROOT}/.agents/catalog" \
+  --profiles engineering \
+  --write >/dev/null
+engineering_count="$("${PYTHON_BIN:-python3}" - "${CATALOG_ROOT}" <<'PY'
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(sys.argv[1]) / "scripts"))
+from catalog_manifest import load_catalog
+
+catalog = load_catalog(Path(sys.argv[1]) / "catalog.toml", Path(sys.argv[1]))
+print(len(catalog.skills_for(("engineering",))))
+PY
+)"
+for agent_root in .agents/skills .claude/skills; do
+  seen="$(find -L "${PROFILE_ROOT}/${agent_root}" -mindepth 2 -maxdepth 2 -name SKILL.md -type f | wc -l | tr -d ' ')"
+  test "${seen}" = "${engineering_count}" ||
+    fail "${agent_root} sees ${seen} of ${engineering_count} engineering skills"
+  for required in development-lifecycle test-driven-development verification-before-completion deliver-acceptance-criteria; do
+    test -f "${PROFILE_ROOT}/${agent_root}/${required}/SKILL.md" ||
+      fail "engineering profile is missing ${required} in ${agent_root}"
+  done
+  test ! -e "${PROFILE_ROOT}/${agent_root}/swot-analysis" ||
+    fail "engineering profile must not expose product skills in ${agent_root}"
+done
+# Sibling skill links must resolve through the agent entrypoints.
+test -f "${PROFILE_ROOT}/.claude/skills/executing-plans/../subagent-driven-development/scripts/review-package" ||
+  fail "sibling scripts must resolve inside the engineering profile"
+
 for removed_path in \
   .gitmodules \
   skills.lock.tsv \

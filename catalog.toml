@@ -8,6 +8,7 @@ revision = "82180a1b3e1835888e4e90bee44963179f1e1ca0"
 license = "BSD-3-Clause"
 license_file = "agent-skill/Scrapling-Skill/LICENSE.txt"
 activation = "auto"
+profile = "engineering"
 skills = [
   { name = "scrapling-official", path = "agent-skill/Scrapling-Skill", capability = "scrapling-web-extraction" },
 ]
@@ -25,6 +26,7 @@ revision = "c54db496e0d2137a90d197c9c01ee9a290c1b2cf"
 license = "Apache-2.0"
 license_file = "LICENSE"
 activation = "auto"
+profile = "engineering"
 skills = [
   { name = "modern-web-guidance", path = "skills/modern-web-guidance", capability = "modern-web-guidance" },
 ]
@@ -37,9 +39,14 @@ revision = "2fbfa004a0192529bc997d103fc12f19a3804aab"
 license = "MIT"
 license_file = "LICENSE"
 activation = "auto"
+profile = "engineering"
 aliases = [
   { from = "idea-refine", to = "brainstorming" },
   { from = "doubt-driven-development", to = "code-review-and-quality" },
+  { from = "spec-driven-development", to = "brainstorming" },
+  { from = "planning-and-task-breakdown", to = "writing-plans" },
+  { from = "incremental-implementation", to = "executing-plans" },
+  { from = "debugging-and-error-recovery", to = "systematic-debugging" },
 ]
 skills = [
   { name = "api-and-interface-design", path = "skills/api-and-interface-design", capability = "api-and-interface-design" },
@@ -48,21 +55,16 @@ skills = [
   { name = "code-review-and-quality", path = "skills/code-review-and-quality", capability = "code-review-and-quality", resources = ["references/security-checklist.md", "references/performance-checklist.md"] },
   { name = "code-simplification", path = "skills/code-simplification", capability = "code-simplification" },
   { name = "context-engineering", path = "skills/context-engineering", capability = "context-engineering" },
-  { name = "debugging-and-error-recovery", path = "skills/debugging-and-error-recovery", capability = "debugging-and-error-recovery" },
   { name = "deprecation-and-migration", path = "skills/deprecation-and-migration", capability = "deprecation-and-migration" },
   { name = "documentation-and-adrs", path = "skills/documentation-and-adrs", capability = "documentation-and-adrs" },
   { name = "frontend-ui-engineering", path = "skills/frontend-ui-engineering", capability = "frontend-ui-engineering", resources = ["references/accessibility-checklist.md"] },
   { name = "git-workflow-and-versioning", path = "skills/git-workflow-and-versioning", capability = "git-workflow-and-versioning" },
-  { name = "incremental-implementation", path = "skills/incremental-implementation", capability = "incremental-implementation", resources = ["references/definition-of-done.md"] },
   { name = "interview-me", path = "skills/interview-me", capability = "interview-me" },
   { name = "observability-and-instrumentation", path = "skills/observability-and-instrumentation", capability = "observability-and-instrumentation", resources = ["references/observability-checklist.md"] },
   { name = "performance-optimization", path = "skills/performance-optimization", capability = "performance-optimization", resources = ["references/performance-checklist.md"] },
-  { name = "planning-and-task-breakdown", path = "skills/planning-and-task-breakdown", capability = "planning-and-task-breakdown", resources = ["references/definition-of-done.md"] },
   { name = "security-and-hardening", path = "skills/security-and-hardening", capability = "security-and-hardening", resources = ["references/security-checklist.md"] },
   { name = "shipping-and-launch", path = "skills/shipping-and-launch", capability = "shipping-and-launch", resources = ["references/definition-of-done.md", "references/security-checklist.md", "references/performance-checklist.md", "references/accessibility-checklist.md"] },
   { name = "source-driven-development", path = "skills/source-driven-development", capability = "source-driven-development" },
-  { name = "spec-driven-development", path = "skills/spec-driven-development", capability = "spec-driven-development" },
-  { name = "test-driven-development", path = "skills/test-driven-development", capability = "test-driven-development", resources = ["references/testing-patterns.md"] },
 ]
 
 [[sources]]
@@ -73,6 +75,7 @@ revision = "4857a2c5ef989794751a0f66b8545a4a49566286"
 license = "MIT"
 license_file = "LICENSE"
 activation = "auto"
+profile = "engineering"
 skills = [
   { name = "ui-ux-pro-max", path = ".claude/skills/ui-ux-pro-max", capability = "ui-ux-pro-max" },
 ]
@@ -81,12 +84,31 @@ skills = [
 id = "obra-superpowers"
 kind = "vendored"
 repository = "obra/superpowers"
-revision = "d884ae04edebef577e82ff7c4e143debd0bbec99"
+revision = "22f0b463e7a5e579904dd6211a520321035526f7"
 license = "MIT"
 license_file = "LICENSE"
 activation = "auto"
+profile = "engineering"
+namespace = "superpowers"
+replacements = [
+  { skill = "executing-plans", file = "SKILL.md", from = "- Your harness has no subagent tool (see the per-platform references in\n  `../using-superpowers/references/`). Never fabricate a dispatch; run", to = "- Your harness has no subagent tool. Never fabricate a dispatch; run" },
+  { skill = "writing-skills", file = "SKILL.md", from = " — see [codex-tools.md](../using-superpowers/references/codex-tools.md) or [gemini-tools.md](../using-superpowers/references/gemini-tools.md) for the path on those runtimes.", to = "." },
+  { skill = "writing-skills", file = "SKILL.md", from = "(`bash scripts/tool.sh`, `node scripts/tool.js`), never by bare path: some harness plugin packagers strip executable bits, and a bare `scripts/tool.sh` fails", to = "(`bash ./scripts/tool.sh`, `node ./scripts/tool.js`), never by bare path: some harness plugin packagers strip executable bits, and a bare `./scripts/tool.sh` fails" },
+]
 skills = [
   { name = "brainstorming", path = "skills/brainstorming", capability = "brainstorming" },
+  { name = "dispatching-parallel-agents", path = "skills/dispatching-parallel-agents", capability = "dispatching-parallel-agents" },
+  { name = "executing-plans", path = "skills/executing-plans", capability = "executing-plans" },
+  { name = "finishing-a-development-branch", path = "skills/finishing-a-development-branch", capability = "finishing-a-development-branch" },
+  { name = "receiving-code-review", path = "skills/receiving-code-review", capability = "receiving-code-review" },
+  { name = "requesting-code-review", path = "skills/requesting-code-review", capability = "requesting-code-review" },
+  { name = "subagent-driven-development", path = "skills/subagent-driven-development", capability = "subagent-driven-development" },
+  { name = "systematic-debugging", path = "skills/systematic-debugging", capability = "systematic-debugging" },
+  { name = "test-driven-development", path = "skills/test-driven-development", capability = "test-driven-development" },
+  { name = "using-git-worktrees", path = "skills/using-git-worktrees", capability = "using-git-worktrees" },
+  { name = "verification-before-completion", path = "skills/verification-before-completion", capability = "verification-before-completion" },
+  { name = "writing-plans", path = "skills/writing-plans", capability = "writing-plans" },
+  { name = "writing-skills", path = "skills/writing-skills", capability = "writing-skills" },
 ]
 
 [[sources]]
@@ -97,6 +119,7 @@ revision = "18468a95b427e70e258b51389796367c6f684e7d"
 license = "MIT"
 license_file = "LICENSE"
 activation = "auto"
+profile = "product"
 skills = [
   { name = "ab-test-analysis", path = "pm-data-analytics/skills/ab-test-analysis", capability = "ab-test-analysis" },
   { name = "analyze-feature-requests", path = "pm-product-discovery/skills/analyze-feature-requests", capability = "feature-request-prioritization" },
@@ -120,7 +143,7 @@ skills = [
   { name = "ideal-customer-profile", path = "pm-go-to-market/skills/ideal-customer-profile", capability = "ideal-customer-profile" },
   { name = "identify-assumptions-existing", path = "pm-product-discovery/skills/identify-assumptions-existing", capability = "identify-assumptions-existing" },
   { name = "identify-assumptions-new", path = "pm-product-discovery/skills/identify-assumptions-new", capability = "identify-assumptions-new" },
-  { name = "intended-vs-implemented", path = "pm-ai-shipping/skills/intended-vs-implemented", capability = "intended-vs-implemented" },
+  { name = "intended-vs-implemented", path = "pm-ai-shipping/skills/intended-vs-implemented", capability = "intended-vs-implemented", profile = "engineering" },
   { name = "interview-script", path = "pm-product-discovery/skills/interview-script", capability = "interview-script" },
   { name = "job-stories", path = "pm-execution/skills/job-stories", capability = "backlog-job-stories", activation = "explicit-job-story-format" },
   { name = "lean-canvas", path = "pm-product-strategy/skills/lean-canvas", capability = "lean-canvas", activation = "explicit-lean-canvas" },
@@ -170,6 +193,7 @@ revision = "9432e2771eb7c221c9454a210c6ae55b6ee25d54"
 license = "Apache-2.0"
 license_file = "LICENSE"
 activation = "auto"
+profile = "product"
 aliases = [
   { from = "define-prioritization-framework", to = "prioritization-frameworks" },
   { from = "foundation-persona", to = "user-personas" },
@@ -193,10 +217,10 @@ skills = [
   { name = "define-jtbd-canvas", path = "skills/define-jtbd-canvas", capability = "define-jtbd-canvas" },
   { name = "define-opportunity-tree", path = "skills/define-opportunity-tree", capability = "opportunity-solution-tree" },
   { name = "define-problem-statement", path = "skills/define-problem-statement", capability = "define-problem-statement" },
-  { name = "deliver-acceptance-criteria", path = "skills/deliver-acceptance-criteria", capability = "deliver-acceptance-criteria" },
-  { name = "deliver-edge-cases", path = "skills/deliver-edge-cases", capability = "deliver-edge-cases" },
-  { name = "deliver-prd", path = "skills/deliver-prd", capability = "product-requirements" },
-  { name = "develop-solution-brief", path = "skills/develop-solution-brief", capability = "develop-solution-brief" },
+  { name = "deliver-acceptance-criteria", path = "skills/deliver-acceptance-criteria", capability = "deliver-acceptance-criteria", profile = "engineering" },
+  { name = "deliver-edge-cases", path = "skills/deliver-edge-cases", capability = "deliver-edge-cases", profile = "engineering" },
+  { name = "deliver-prd", path = "skills/deliver-prd", capability = "product-requirements", profile = "engineering" },
+  { name = "develop-solution-brief", path = "skills/develop-solution-brief", capability = "develop-solution-brief", profile = "engineering" },
   { name = "discover-competitive-analysis", path = "skills/discover-competitive-analysis", capability = "competitive-analysis" },
   { name = "discover-interview-synthesis", path = "skills/discover-interview-synthesis", capability = "multi-interview-synthesis" },
   { name = "discover-market-sizing", path = "skills/discover-market-sizing", capability = "market-sizing" },
@@ -209,7 +233,8 @@ kind = "local"
 repository = "."
 license = "MIT"
 activation = "auto"
+profile = "engineering"
 skills = [
   { name = "document-architecture", path = "skills/document-architecture", capability = "document-architecture" },
-  { name = "using-agent-skills", path = "skills/using-agent-skills", capability = "using-agent-skills", activation = "explicit-catalog-guidance" },
+  { name = "development-lifecycle", path = "skills/development-lifecycle", capability = "development-lifecycle" },
 ]

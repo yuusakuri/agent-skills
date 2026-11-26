@@ -17,9 +17,10 @@ Skills カタログです。Skill 本体をリポジトリに含めているた�
 表すルート `SKILL.md` は必要ありません。エージェントは各 `SKILL.md` の
 `name` と `description` から適用する Skill を選びます。
 
-`using-agent-skills` は、利用者が Skill の選び方を尋ねた場合や複数候補の
-責務が曖昧な場合だけ使う補助 Skill です。通常の自動選択に先立って毎回
-実行するものではありません。
+開発作業では `development-lifecycle` が入口です。作業を工程に割り当てて
+担当する Skill を名指しし、変更の大きさに合わせて手順を軽重し、仕様と
+テストの規則を全工程に適用します。使い方は「開発での使い方」を参照して
+ください。
 
 ## リポジトリ構成
 
@@ -28,10 +29,11 @@ Skills カタログです。Skill 本体をリポジトリに含めているた�
 | `skills/<skill-name>/` | `SKILL.md` と、その Skill 専用の `references/`、`scripts/`、`assets/` |
 | `.agents/skills` | Codex 用エントリーポイント |
 | `.claude/skills/` | Claude Code 用の個別 Skill エントリーポイント |
-| `catalog.toml` | 外部取得元、固定 commit、ライセンス、同梱リソース、名前の対応関係 |
+| `catalog.toml` | 外部取得元、固定 commit、ライセンス、プロファイル、同梱リソース、名前の対応関係 |
 | `THIRD_PARTY_NOTICES.md` | 外部取得元とライセンス本文を source ごとに集約した通知 |
 | `scripts/update_catalog.py` | 固定した外部 source から正本を再生成 |
-| `scripts/sync_agent_links.py` | Codex と Claude Code のエントリーポイントを同期・検証 |
+| `scripts/sync_agent_links.py` | Codex と Claude Code のエントリーポイントを、選んだプロファイルの範囲で同期・検証 |
+| `docs/development-workflow.md` | 開発での使い方、Spec Kit との併用、テストを守らせる hooks の例 |
 | `scripts/validate.py` | カタログ定義と Skill メタデータを検証 |
 | `tests/` | カタログ、更新、リンク、利用側 clone の回帰テスト |
 
@@ -64,6 +66,34 @@ git add .gitmodules .agents/catalog .agents/skills .claude/skills
 同期コマンドが作るリンクもプロジェクトへ commit します。以後、利用者が
 Skill を個別にインストールする必要はありません。
 
+### プロファイルを選ぶ
+
+Skill は `engineering` と `product` の2つのプロファイルに分かれています。
+
+| プロファイル | 内容 |
+|---|---|
+| `engineering` | 要件、設計、計画、TDD、デバッグ、検証、レビュー、リリース、運用と、受け入れ基準・境界条件・PRD など仕様づくりの Skill |
+| `product` | 市場調査、戦略、価格、GTM、分析など、プロダクトマネジメントの Skill |
+
+開発プロジェクトでは `engineering` だけを入れることを勧めます。使わない
+Skill の説明文が毎回のコンテキストを占め、誤った Skill が選ばれる原因に
+なるためです。
+
+```bash
+python3 .agents/catalog/scripts/sync_agent_links.py \
+  --project-root . \
+  --catalog-root .agents/catalog \
+  --profiles engineering \
+  --write
+git add .agents/agent-skills.toml .agents/skills .claude/skills
+```
+
+選んだプロファイルは `.agents/agent-skills.toml` に記録され、以後の
+`--write` と `--check` はそれに従います。複数選ぶときは
+`--profiles engineering,product`、全部に戻すときは `--profiles all` です。
+プロファイルを選ぶと、Codex 用の `.agents/skills` も Skill ごとのリンクを
+並べたディレクトリになります。
+
 既存プロジェクトを取得するときは、そのプロジェクトの submodule を
 初期化します。
 
@@ -73,6 +103,35 @@ git submodule update --init .agents/catalog
 
 submodule の commit は各プロジェクトが個別に保持するため、別の
 プロジェクトを更新しても連動しません。
+
+## 開発での使い方
+
+プロジェクトの `AGENTS.md`（Claude Code なら `CLAUDE.md` からも参照）に
+次を書きます。
+
+```markdown
+Start software work with the `development-lifecycle` skill. Scale the
+process to the change. Never weaken, skip, or delete a test to make it pass.
+
+Test command: <command>   Specs: docs/specs/   Plans: docs/plans/
+Decisions: docs/decisions/
+```
+
+`development-lifecycle` が適用する仕様とテストの規則は次のとおりです。
+
+- 標準以上の変更は、承認された設計（`brainstorming`）から始める
+- 受け入れ基準は Given/When/Then で検証可能に書き、各基準に対応する
+  テストを計画（`writing-plans`）で名指しする
+- 実装は失敗するテストを先に書く（`test-driven-development`）
+- テストを弱めて緑にしない。仕様が誤っていたら、仕様、テスト、コードの
+  順に直す
+- 完了と言う前にテストを実行し、コマンドと結果を示す
+  （`verification-before-completion`）
+
+Skill は助言なので、守られないことがあります。テストの実行は
+Claude Code の hooks と CI でも強制してください。設定例と、GitHub
+Spec Kit と併用するときの役割分担は
+[docs/development-workflow.md](docs/development-workflow.md) にあります。
 
 ## 文書作成
 
@@ -120,8 +179,11 @@ for test_file in tests/*.sh; do bash "${test_file}"; done
 ```
 
 外部 source は `catalog.toml` の完全な commit SHA で固定します。共通参照
-ファイルは、それを使う Skill の内部へ取り込み、単独の Skill
-ディレクトリとしても自己完結する状態を保ちます。
+ファイルは、それを使う Skill の内部へ取り込みます。obra/superpowers の
+Skill は同じプロファイル内の別の Skill のファイルやスクリプトを参照するため、
+検証はリンク先が同じプロファイルに存在することを確かめます。上流の
+`superpowers:<name>` という名前は、取り込み時にカタログ内の名前へ
+書き換えます。
 
 ## ライセンス
 

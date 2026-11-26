@@ -78,8 +78,22 @@ assert_snapshot_failure() {
   printf 'ok - %s\n' "${test_name}"
 }
 
+assert_snapshot_success() {
+  local test_name="$1"
+  local fixture_root="$2"
+  local output
+  if ! output=$("${PYTHON_BIN}" "${VALIDATOR}" \
+    --catalog "${fixture_root}/catalog.toml" \
+    --catalog-root "${fixture_root}" 2>&1); then
+    printf 'not ok - %s\n%s\n' "${test_name}" "${output}" >&2
+    exit 1
+  fi
+  PASS_COUNT=$((PASS_COUNT + 1))
+  printf 'ok - %s\n' "${test_name}"
+}
+
 valid_fixture="$(new_fixture)"
-trap 'rm -rf "${valid_fixture}" "${duplicate_name_fixture:-}" "${duplicate_capability_fixture:-}" "${floating_revision_fixture:-}" "${missing_local_fixture:-}" "${traversal_fixture:-}" "${submodule_fixture:-}" "${invalid_resource_fixture:-}" "${invalid_alias_fixture:-}" "${broken_reference_fixture:-}" "${metadata_fixture:-}"' EXIT
+trap 'rm -rf "${valid_fixture}" "${duplicate_name_fixture:-}" "${duplicate_capability_fixture:-}" "${floating_revision_fixture:-}" "${missing_local_fixture:-}" "${traversal_fixture:-}" "${submodule_fixture:-}" "${invalid_resource_fixture:-}" "${invalid_alias_fixture:-}" "${broken_reference_fixture:-}" "${metadata_fixture:-}" "${namespace_fixture:-}" "${invalid_profile_fixture:-}" "${reserved_profile_fixture:-}" "${cross_profile_fixture:-}" "${sibling_fixture:-}"' EXIT
 write_skill "${valid_fixture}" local-skill
 cat >"${valid_fixture}/catalog.toml" <<'TOML'
 version = 1
@@ -291,5 +305,115 @@ skills = [
 ]
 TOML
 assert_snapshot_failure 'rejects non-string metadata' 'metadata values must be strings' "${metadata_fixture}"
+
+namespace_fixture="$(new_fixture)"
+write_skill "${namespace_fixture}" external-skill
+printf '\nNext, invoke example:external-skill.\n' \
+  >>"${namespace_fixture}/skills/external-skill/SKILL.md"
+cat >"${namespace_fixture}/catalog.toml" <<'TOML'
+version = 1
+[[sources]]
+id = "example"
+kind = "vendored"
+repository = "example/source"
+revision = "0123456789abcdef0123456789abcdef01234567"
+license = "MIT"
+license_file = "LICENSE"
+activation = "auto"
+namespace = "example"
+skills = [
+  { name = "external-skill", path = "skills/external-skill", capability = "external-capability" },
+]
+TOML
+assert_snapshot_failure 'rejects unresolved namespaced references' 'unresolved namespaced reference in external-skill: example:external-skill' "${namespace_fixture}"
+
+invalid_profile_fixture="$(new_fixture)"
+cat >"${invalid_profile_fixture}/catalog.toml" <<'TOML'
+version = 1
+[[sources]]
+id = "example"
+kind = "vendored"
+repository = "example/source"
+revision = "0123456789abcdef0123456789abcdef01234567"
+license = "MIT"
+license_file = "LICENSE"
+activation = "auto"
+profile = "Not Valid"
+skills = [
+  { name = "external-skill", path = "skills/one", capability = "external-capability" },
+]
+TOML
+assert_failure 'rejects invalid profile names' 'invalid profile: Not Valid' "${invalid_profile_fixture}"
+
+reserved_profile_fixture="$(new_fixture)"
+cat >"${reserved_profile_fixture}/catalog.toml" <<'TOML'
+version = 1
+[[sources]]
+id = "example"
+kind = "vendored"
+repository = "example/source"
+revision = "0123456789abcdef0123456789abcdef01234567"
+license = "MIT"
+license_file = "LICENSE"
+activation = "auto"
+skills = [
+  { name = "external-skill", path = "skills/one", capability = "external-capability", profile = "all" },
+]
+TOML
+assert_failure 'rejects the reserved profile name' 'profile name is reserved: all' "${reserved_profile_fixture}"
+
+cross_profile_fixture="$(new_fixture)"
+write_skill "${cross_profile_fixture}" router-skill
+write_skill "${cross_profile_fixture}" product-skill
+sed -i.bak 's/^description: .*/description: Product fixture skill for the profile test./' \
+  "${cross_profile_fixture}/skills/product-skill/SKILL.md"
+printf '\nHand off to `product-skill` afterwards.\n' \
+  >>"${cross_profile_fixture}/skills/router-skill/SKILL.md"
+cat >"${cross_profile_fixture}/catalog.toml" <<'TOML'
+version = 1
+[[sources]]
+id = "catalog"
+kind = "local"
+repository = "."
+license = "MIT"
+activation = "auto"
+profile = "engineering"
+skills = [
+  { name = "router-skill", path = "skills/router-skill", capability = "router" },
+  { name = "product-skill", path = "skills/product-skill", capability = "product", profile = "product" },
+]
+TOML
+assert_snapshot_failure 'rejects local references across profiles' 'local skill router-skill (engineering) references product-skill from profile product' "${cross_profile_fixture}"
+
+sibling_fixture="$(new_fixture)"
+write_skill "${sibling_fixture}" plan-runner
+write_skill "${sibling_fixture}" review-kit
+sed -i.bak 's/^description: .*/description: Review kit fixture for the sibling link test./' \
+  "${sibling_fixture}/skills/review-kit/SKILL.md"
+printf 'reviewer prompt\n' >"${sibling_fixture}/skills/review-kit/reviewer.md"
+printf '\nDispatch [the reviewer](../review-kit/reviewer.md).\n' \
+  >>"${sibling_fixture}/skills/plan-runner/SKILL.md"
+cat >"${sibling_fixture}/catalog.toml" <<'TOML'
+version = 1
+[[sources]]
+id = "catalog"
+kind = "local"
+repository = "."
+license = "MIT"
+activation = "auto"
+skills = [
+  { name = "plan-runner", path = "skills/plan-runner", capability = "plan-runner" },
+  { name = "review-kit", path = "skills/review-kit", capability = "review-kit" },
+]
+TOML
+assert_snapshot_success 'accepts links to a sibling skill in the same profile' "${sibling_fixture}"
+
+sed -i.bak 's/capability = "review-kit" }/capability = "review-kit", profile = "other" }/' \
+  "${sibling_fixture}/catalog.toml"
+assert_snapshot_failure 'rejects links to a sibling skill in another profile' 'plan-runner links to review-kit from profile other' "${sibling_fixture}"
+
+sed -i.bak 's/, profile = "other" }/ }/' "${sibling_fixture}/catalog.toml"
+rm "${sibling_fixture}/skills/review-kit/reviewer.md"
+assert_snapshot_failure 'rejects broken links to a sibling skill' 'broken Markdown link in plan-runner' "${sibling_fixture}"
 
 printf '1..%s\n' "${PASS_COUNT}"

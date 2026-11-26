@@ -8,6 +8,7 @@ from contextlib import suppress
 import hashlib
 import json
 import os
+import re
 from pathlib import Path, PurePosixPath
 import shutil
 import subprocess
@@ -144,6 +145,7 @@ def copy_source_skills(
     source: Source,
     source_root: Path,
     staged_skills: Path,
+    catalog_names: frozenset[str],
 ) -> None:
     destinations: list[Path] = []
     for skill in source.skills:
@@ -182,6 +184,39 @@ def copy_source_skills(
     for destination in destinations:
         normalize_frontmatter_metadata(destination / "SKILL.md")
     apply_aliases(destinations, source.aliases, source.id)
+    apply_namespace(destinations, source, catalog_names)
+
+
+def apply_namespace(
+    skill_dirs: list[Path],
+    source: Source,
+    catalog_names: frozenset[str],
+) -> None:
+    """Rewrite plugin-qualified names such as `ns:skill` to catalog names."""
+    if source.namespace is None:
+        return
+    pattern = re.compile(
+        rf"(?<![A-Za-z0-9_-]){re.escape(source.namespace)}:"
+        r"([a-z0-9]+(?:-[a-z0-9]+)*)"
+    )
+    rewritten = 0
+    for skill_dir in skill_dirs:
+        for markdown_file in sorted(skill_dir.rglob("*.md")):
+            content = markdown_file.read_text(encoding="utf-8")
+            for match in pattern.finditer(content):
+                if match.group(1) not in catalog_names:
+                    raise CatalogError(
+                        "namespaced reference to a skill outside the catalog "
+                        f"in {source.id}: {match.group(0)}"
+                    )
+            updated, count = pattern.subn(r"\1", content)
+            if count:
+                rewritten += count
+                markdown_file.write_text(updated, encoding="utf-8")
+    if rewritten == 0:
+        raise CatalogError(
+            f"namespace is unused in source {source.id}: {source.namespace}"
+        )
 
 
 def apply_text_replacements(
@@ -420,14 +455,17 @@ def update() -> int:
         staged_skills = temporary_root / "skills"
         staged_skills.mkdir()
         notice_sections: list[str] = []
+        catalog_names = frozenset(skill.name for skill in catalog.skills)
 
         for source in catalog.sources:
             if source.kind == "local":
-                copy_source_skills(source, catalog_root, staged_skills)
+                copy_source_skills(
+                    source, catalog_root, staged_skills, catalog_names
+                )
                 continue
             checkout = temporary_root / "sources" / source.id
             checkout_source(source, checkout, base_url)
-            copy_source_skills(source, checkout, staged_skills)
+            copy_source_skills(source, checkout, staged_skills, catalog_names)
             notice_sections.append(notice_section(source, checkout))
 
         staged_names = {path.name for path in staged_skills.iterdir()}
