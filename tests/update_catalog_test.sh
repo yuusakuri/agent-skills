@@ -52,6 +52,8 @@ for skill_name in external-one external-two; do
 done
 printf '\nUse `retired-skill` for the next step.\n' \
   >>"${SOURCE_WORK}/skills/external-one/SKILL.md"
+printf 'Then invoke example:external-two and **example:external-two**.\n' \
+  >>"${SOURCE_WORK}/skills/external-one/SKILL.md"
 printf 'shared completion criteria\n' \
   >"${SOURCE_WORK}/references/definition-of-done.md"
 printf '%s\n' \
@@ -81,6 +83,7 @@ revision = "${revision}"
 license = "MIT"
 license_file = "LICENSE"
 activation = "auto"
+namespace = "${2:-example}"
 aliases = [
   { from = "retired-skill", to = "local-skill" },
 ]
@@ -149,6 +152,12 @@ grep -Fq 'shared completion criteria' \
 grep -Fq 'Use `local-skill` for the next step.' \
   "${TARGET_ROOT}/external-one/SKILL.md"
 grep -Fq '# External One' "${TARGET_ROOT}/external-one/SKILL.md"
+grep -Fq 'Then invoke external-two and **external-two**.' \
+  "${TARGET_ROOT}/external-one/SKILL.md"
+if grep -Fq 'example:' "${TARGET_ROOT}/external-one/SKILL.md"; then
+  printf 'not ok - namespaced upstream skill reference was not normalized\n' >&2
+  exit 1
+fi
 if grep -Fq 'retired-skill' "${TARGET_ROOT}/external-one/SKILL.md"; then
   printf 'not ok - excluded upstream skill reference was not normalized\n' >&2
   exit 1
@@ -242,4 +251,35 @@ if PATH="${FAKE_BIN}:${PATH}" \
 fi
 printf 'ok - check mode rejects content drift\n'
 
-printf '1..8\n'
+write_catalog "${SOURCE_REVISION}" "other"
+output="$(PATH="${FAKE_BIN}:${PATH}" \
+  FETCH_LOG="${FETCH_LOG}" \
+  REAL_GIT_BIN="${REAL_GIT_BIN}" \
+  AGENT_SKILLS_GITHUB_BASE_URL="file://${REMOTE_ROOT}" \
+  "${PYTHON_BIN}" "${UPDATER}" \
+    --catalog "${CATALOG_ROOT}/catalog.toml" \
+    --catalog-root "${CATALOG_ROOT}" \
+    --target "${TARGET_ROOT}" 2>&1 || true)"
+if [[ "${output}" != *"namespace is unused in source example-source: other"* ]]; then
+  printf 'not ok - unused namespace should fail\n%s\n' "${output}" >&2
+  exit 1
+fi
+printf 'ok - rejects a namespace that matches nothing upstream\n'
+
+write_catalog "${SOURCE_REVISION}"
+sed -i.bak '/name = "external-two"/d' "${CATALOG_ROOT}/catalog.toml"
+output="$(PATH="${FAKE_BIN}:${PATH}" \
+  FETCH_LOG="${FETCH_LOG}" \
+  REAL_GIT_BIN="${REAL_GIT_BIN}" \
+  AGENT_SKILLS_GITHUB_BASE_URL="file://${REMOTE_ROOT}" \
+  "${PYTHON_BIN}" "${UPDATER}" \
+    --catalog "${CATALOG_ROOT}/catalog.toml" \
+    --catalog-root "${CATALOG_ROOT}" \
+    --target "${TARGET_ROOT}" 2>&1 || true)"
+if [[ "${output}" != *"namespaced reference to a skill outside the catalog in example-source: example:external-two"* ]]; then
+  printf 'not ok - dangling namespaced reference should fail\n%s\n' "${output}" >&2
+  exit 1
+fi
+printf 'ok - rejects namespaced references to skills outside the catalog\n'
+
+printf '1..10\n'

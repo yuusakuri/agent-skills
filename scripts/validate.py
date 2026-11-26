@@ -128,7 +128,10 @@ def frontmatter(skill_file: Path) -> tuple[str, str]:
     return name, description
 
 
-def validate_resource_references(skill_dir: Path) -> None:
+def validate_resource_references(
+    skill_dir: Path,
+    profiles: dict[str, str] | None = None,
+) -> None:
     skill_file = skill_dir / "SKILL.md"
     content = skill_file.read_text(encoding="utf-8")
     for raw_reference in RESOURCE_REFERENCE_PATTERN.findall(content):
@@ -150,13 +153,31 @@ def validate_resource_references(skill_dir: Path) -> None:
         try:
             referenced_path.relative_to(skill_dir.resolve())
         except ValueError as error:
-            raise CatalogError(
-                f"reference escapes skill root in {skill_dir.name}: {reference}"
-            ) from error
+            sibling = sibling_skill(referenced_path, skill_dir.parent)
+            if sibling is None or profiles is None or sibling not in profiles:
+                raise CatalogError(
+                    f"reference escapes skill root in {skill_dir.name}: "
+                    f"{reference}"
+                ) from error
+            # Sibling links only resolve when both skills are installed, and
+            # a project installs whole profiles.
+            if profiles[sibling] != profiles[skill_dir.name]:
+                raise CatalogError(
+                    f"{skill_dir.name} links to {sibling} from profile "
+                    f"{profiles[sibling]}: {reference}"
+                ) from error
         if not referenced_path.exists():
             raise CatalogError(
                 f"broken Markdown link in {skill_dir.name}: {reference}"
             )
+
+
+def sibling_skill(referenced_path: Path, skills_root: Path) -> str | None:
+    try:
+        relative = referenced_path.relative_to(skills_root.resolve())
+    except ValueError:
+        return None
+    return relative.parts[0] if len(relative.parts) > 1 else None
 
 
 def validate_local_skill_references(
@@ -164,6 +185,7 @@ def validate_local_skill_references(
     catalog_root: Path,
     names: set[str],
 ) -> None:
+    profiles = {skill.name: skill.profile for skill in catalog.skills}
     for source in catalog.sources:
         if source.kind != "local":
             continue
@@ -176,6 +198,32 @@ def validate_local_skill_references(
                     raise CatalogError(
                         f"local skill {skill.name} references absent skill: "
                         f"{referenced_name}"
+                    )
+                # A project that installs only this profile must still be able
+                # to resolve every skill this one tells the agent to use.
+                if profiles[referenced_name] != skill.profile:
+                    raise CatalogError(
+                        f"local skill {skill.name} ({skill.profile}) references "
+                        f"{referenced_name} from profile "
+                        f"{profiles[referenced_name]}"
+                    )
+
+
+def validate_namespaces(catalog: Catalog, skills_root: Path) -> None:
+    for source in catalog.sources:
+        if source.namespace is None:
+            continue
+        pattern = re.compile(
+            rf"(?<![A-Za-z0-9_-]){re.escape(source.namespace)}:"
+            r"[a-z0-9]+(?:-[a-z0-9]+)*"
+        )
+        for skill in source.skills:
+            for markdown_file in sorted((skills_root / skill.name).rglob("*.md")):
+                match = pattern.search(markdown_file.read_text(encoding="utf-8"))
+                if match:
+                    raise CatalogError(
+                        f"unresolved namespaced reference in {skill.name}: "
+                        f"{match.group(0)}"
                     )
 
 
@@ -195,6 +243,7 @@ def validate_snapshot(catalog: Catalog, catalog_root: Path) -> None:
             f"missing={sorted(expected - actual)}, extra={sorted(actual - expected)}"
         )
 
+    profiles = {skill.name: skill.profile for skill in catalog.skills}
     content_hashes: dict[str, str] = {}
     descriptions: dict[str, str] = {}
     for skill_name in sorted(expected):
@@ -225,7 +274,7 @@ def validate_snapshot(catalog: Catalog, catalog_root: Path) -> None:
                 f"{descriptions[description]} and {skill_name}"
             )
         descriptions[description] = skill_name
-        validate_resource_references(skill_dir)
+        validate_resource_references(skill_dir, profiles)
 
     for source in catalog.sources:
         for alias in source.aliases:
@@ -238,6 +287,7 @@ def validate_snapshot(catalog: Catalog, catalog_root: Path) -> None:
                             f"{alias.source}"
                         )
 
+    validate_namespaces(catalog, skills_root)
     validate_local_skill_references(catalog, catalog_root, expected)
 
 

@@ -22,11 +22,15 @@ SOURCE_KEYS = {
     "license_file",
     "notice_file",
     "activation",
+    "namespace",
+    "profile",
     "aliases",
     "replacements",
     "skills",
 }
-SKILL_KEYS = {"name", "path", "capability", "activation", "resources"}
+SKILL_KEYS = {"name", "path", "capability", "activation", "profile", "resources"}
+DEFAULT_PROFILE = "core"
+ALL_PROFILES = "all"
 ALIAS_KEYS = {"from", "to"}
 REPLACEMENT_KEYS = {"skill", "file", "from", "to"}
 
@@ -41,6 +45,7 @@ class Skill:
     path: PurePosixPath
     capability: str
     activation: str
+    profile: str
     resources: tuple[PurePosixPath, ...]
 
 
@@ -68,6 +73,8 @@ class Source:
     license_file: PurePosixPath | None
     notice_file: PurePosixPath | None
     activation: str
+    profile: str
+    namespace: str | None
     aliases: tuple[Alias, ...]
     replacements: tuple[TextReplacement, ...]
     skills: tuple[Skill, ...]
@@ -81,6 +88,22 @@ class Catalog:
     @property
     def skills(self) -> tuple[Skill, ...]:
         return tuple(skill for source in self.sources for skill in source.skills)
+
+    @property
+    def profiles(self) -> tuple[str, ...]:
+        return tuple(sorted({skill.profile for skill in self.skills}))
+
+    def skills_for(self, profiles: tuple[str, ...] | None) -> tuple[Skill, ...]:
+        """Return the skills in the selected profiles; None selects all."""
+        if profiles is None:
+            return self.skills
+        unknown = sorted(set(profiles) - set(self.profiles))
+        if unknown:
+            raise CatalogError(
+                f"unknown profile: {', '.join(unknown)} "
+                f"(available: {', '.join(self.profiles)})"
+            )
+        return tuple(skill for skill in self.skills if skill.profile in profiles)
 
 
 def _required_string(mapping: dict[str, Any], key: str, context: str) -> str:
@@ -117,10 +140,19 @@ def declared_skill_name(skill_file: Path) -> str | None:
     return None
 
 
+def _profile(value: Any, context: str) -> str:
+    if not isinstance(value, str) or not NAME_PATTERN.fullmatch(value):
+        raise CatalogError(f"invalid profile: {value} ({context})")
+    if value == ALL_PROFILES:
+        raise CatalogError(f"profile name is reserved: {value} ({context})")
+    return value
+
+
 def _parse_skill(
     raw_skill: Any,
     source_id: str,
     default_activation: str,
+    default_profile: str,
 ) -> Skill:
     context = f"source {source_id} skill"
     if not isinstance(raw_skill, dict):
@@ -159,7 +191,8 @@ def _parse_skill(
         raise CatalogError(
             f"{context} resources must be under assets, references, or scripts"
         )
-    return Skill(name, path, capability, activation_value, resources)
+    profile = _profile(raw_skill.get("profile", default_profile), context)
+    return Skill(name, path, capability, activation_value, profile, resources)
 
 
 def _parse_alias(raw_alias: Any, source_id: str) -> Alias:
@@ -226,6 +259,14 @@ def _parse_source(raw_source: Any) -> Source:
     activation = _required_string(
         raw_source, "activation", f"source {source_id}"
     )
+    profile = _profile(
+        raw_source.get("profile", DEFAULT_PROFILE), f"source {source_id}"
+    )
+    namespace = raw_source.get("namespace")
+    if namespace is not None and (
+        not isinstance(namespace, str) or not NAME_PATTERN.fullmatch(namespace)
+    ):
+        raise CatalogError(f"source {source_id} namespace must use kebab-case")
     raw_aliases = raw_source.get("aliases", [])
     if not isinstance(raw_aliases, list):
         raise CatalogError(f"source {source_id} aliases must be an array")
@@ -289,7 +330,7 @@ def _parse_source(raw_source: Any) -> Source:
     if not isinstance(raw_skills, list) or not raw_skills:
         raise CatalogError(f"source must declare at least one skill: {source_id}")
     skills = tuple(
-        _parse_skill(raw_skill, source_id, activation)
+        _parse_skill(raw_skill, source_id, activation, profile)
         for raw_skill in raw_skills
     )
     return Source(
@@ -301,6 +342,8 @@ def _parse_source(raw_source: Any) -> Source:
         license_file,
         notice_file,
         activation,
+        profile,
+        namespace,
         aliases,
         replacements,
         skills,
